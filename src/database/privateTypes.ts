@@ -1,8 +1,6 @@
 import { GoogleSpreadsheetRow, GoogleSpreadsheetWorksheet } from 'google-spreadsheet'
 
-// Should change to username rather than authorTag
-// Should change to userID rather than authorID
-type UserLogKeys = 'lastMsgID' | 'lastMsgTimestamp' | 'authorTag' | 'authorID' | 'warnings'
+type UserLogKeys = 'lastMsgID' | 'lastMsgTimestamp' | 'username' | 'userID'
 export type UserLogInfo = { [K in UserLogKeys]: string }
 
 // YouTube Post Notifications

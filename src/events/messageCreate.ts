@@ -9,7 +9,7 @@ import { MILLISECONDS } from '../data/time.js'
 const LFTAutomodChannels = [
     '460339922231099402',   // #looking-for-trade-pc
     '460340670960500737',   // #looking-for-trade-ps
-    '460340942990475264'    // #looking-for-trade-xbox
+    '460340942990475264',   // #looking-for-trade-xbox
 ]
 
 let recentMessages: OmitPartialGroupDMChannel<Message<boolean>>[] = []
@@ -19,41 +19,37 @@ export async function onMessageCreate(message: OmitPartialGroupDMChannel<Message
     if (message.author.bot) return
 
     if (LFTAutomodChannels.includes(message.channelId) && database.userLogs) {
-        const user = database.userLogs.find(user => user.get('authorID') === message.author.id)
+        let user = database.userLogs.find(user => user.get('userID') === message.author.id)
         if (!user) {
-            const newUser = await database.userLogsTable.addRow({
-                lastMsgID: message.id,
-                lastMsgTimestamp: message.createdTimestamp.toString(),
-                authorTag: message.author.username,
-                authorID: message.author.id,
-                warnings: '0'
+            user = await database.userLogsTable.addRow({
+                lastMsgID: '',
+                lastMsgTimestamp: '',
+                username: message.author.username,
+                userID: message.author.id,
             } as UserLogInfo)
 
-            database.userLogs.push(newUser)
-            return
+            database.userLogs.push(user)
         }
 
         const timePassed = new Date(message.createdTimestamp).getTime() - Date.parse(user.get('lastMsgTimestamp'))
-        const cooldownViolated = timePassed < 23 * MILLISECONDS.HOUR
+        const cooldownViolated = timePassed < 16 * MILLISECONDS.HOUR
         const badFormatting = !/\[W\]|\[H\]|WTB|WTS/i.test(message.content)
 
         if (cooldownViolated || badFormatting){
-            const violation = cooldownViolated ? '23 Hour Rule' : 'Formatting'
+            const violation = cooldownViolated ? 'Cooldown' : 'Formatting'
             try {
                 await message.delete()
-                user.set('warnings', String(parseInt(user.get('warnings')) + 1))
                 await sendToChannel(
                     CHANNEL_IDS.LFT_LOG,
-                    { embeds: [createAMLogEntry(message, user.get('warnings'), violation)] }
+                    { embeds: [createAMLogEntry(message, violation)] }
                 )
                 DMRules(violation, message, user)
             } catch (e){}
         } else {
             user.set('lastMsgID', message.id)
             user.set('lastMsgTimestamp', new Date(message.createdTimestamp).toString())
+            user.save()
         }
-
-        user.save()
     }
 
     // if (message.guildId === DD_SERVER_ID) {
@@ -80,7 +76,7 @@ export async function onMessageCreate(message: OmitPartialGroupDMChannel<Message
     //             .addFields([
     //                 {
     //                     name: 'Content',
-    //                     value: msg.content.length > 1024 ? `${msg.content.slice(0, 1020)}...` : msg.content
+    //                     value: truncateString(msg.content, 1024)
     //                 },
     //                 { name: 'Reason', value: 'Posting identical messages in multiple channels.' }
     //             ])

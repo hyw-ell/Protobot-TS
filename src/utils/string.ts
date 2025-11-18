@@ -1,14 +1,27 @@
 import { findBestMatch } from 'string-similarity'
 
 /**
- * Capitalizes the first letter of every word in a string
- */
-export const capitalize = (string: string) => string.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
-
-/**
  * Capitalizes the first letter in a string
  */
-export const capFirstLetter = (string: string) => string.charAt(0).toUpperCase() + string.slice(1)
+export function capFirstLetter(string: string) {
+    return string.charAt(0).toUpperCase() + string.slice(1)
+}
+
+/**
+ * Capitalizes the first letter of every word in a string
+ */
+export function capitalize(string: string) {
+    const words = string.split(' ')
+    const capitalizedWords = words.map(w => capFirstLetter(w))
+    return capitalizedWords.join(' ')
+}
+
+/**
+ * Truncates a string and adds ellipses at the end if the string has more than `maxCharacters` characters.
+ */
+export function truncateString(string: string, maxCharacters: number) {
+    return string.length > 1024 ? `${string.slice(0, maxCharacters - 3)}...` : string
+}
 
 /**
  * Formats an array of strings by inserting commas and replacing the last comma with ", and".
