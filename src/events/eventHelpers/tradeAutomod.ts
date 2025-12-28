@@ -1,4 +1,4 @@
-import { EmbedBuilder, Message } from 'discord.js'
+import { codeBlock, EmbedBuilder, Message, time } from 'discord.js'
 import { GoogleSpreadsheetRow } from 'google-spreadsheet'
 import { UserLogInfo } from '../../database/privateTypes.js'
 import { MILLISECONDS } from '../../data/time.js'
@@ -44,11 +44,11 @@ export function DMRules(violation: 'Cooldown' | 'Formatting', message: Message, 
                 'Please review the Looking-For-Trade channel rules (pinned in all Looking-For-Trade channels).'
             )
             .addFields([
-                { name: 'This is what you posted:', value: `\`\`\`${truncateString(message.content, 1024)}\`\`\`` },
+                { name: 'This is what you posted:', value: codeBlock(truncateString(message.content, 1024)) },
             ])
 
     if (violation === 'Cooldown') {
-        const cooldownEnd = `<t:${(Date.parse(user.get('lastMsgTimestamp')) + 16 * MILLISECONDS.HOUR) / 1000}>`
+        const cooldownEnd = time((Date.parse(user.get('lastMsgTimestamp')) + 16 * MILLISECONDS.HOUR) / 1000)
 
         embed.addFields([
             { name: 'You may post again after:', value: cooldownEnd }

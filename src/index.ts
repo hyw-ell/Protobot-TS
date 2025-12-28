@@ -1,3 +1,5 @@
+import 'dotenv/config'
+
 import { VoiceChannel } from 'discord.js'
 import { inspect } from 'util'
 import { schedule } from 'node-cron'
