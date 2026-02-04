@@ -1,36 +1,47 @@
-import { AnyThreadChannel, ForumChannel } from 'discord.js'
+import { AnyThreadChannel, ChannelType } from 'discord.js'
+import { DD_SERVER_ID } from '../data/discord.js'
 
-const forumIDs = [
-    '1183125378613657720', // bug-report-test
-    '1166774506002591765', // server-suggestions
-    '1167947531469201469', // role-requests
+const keywords = [
+    'bug-report',
+    'feedback',
+    'suggestions',
+    'requests',
 ]
+
 export async function onThreadCreate(thread: AnyThreadChannel) {
-    if (!forumIDs.includes(thread.parent?.id ?? '')) return
-    const messages = await thread.awaitMessages({max: 1, time: 5000})
-    const starterMessage = messages.first()
-    if (!starterMessage) return
-    await starterMessage.react('<:thumbs_up:745501111015833632>')
-    await starterMessage.react('<:thumbs_sideways:745501110403465318>')
-    await starterMessage.react('<:thumbs_down:745501108075626578>')
+    if (thread.guildId === DD_SERVER_ID && thread.parent?.type === ChannelType.GuildForum) {
+        if (keywords.some(w => thread.parent?.name.includes(w))) {
+            const threadMessages = await thread.messages.fetch()
+            const starterMessage = threadMessages.first()
+        
+            await starterMessage?.react('thumbs_up:1468453543424950495')
+            await starterMessage?.react('thumbs_sideways:1468453542384898079')
+            await starterMessage?.react('thumbs_down:1468453540908367994')
+        }
+    }
 }
 
 export function onThreadUpdate(oldThread: AnyThreadChannel, newThread: AnyThreadChannel) {
     const oldTags = oldThread.appliedTags
     const newTags = newThread.appliedTags
-    if (!forumIDs.includes(oldThread.parent?.id ?? '') || oldTags.join() === newTags.join()) return
 
-    const tags = (oldThread.parent as ForumChannel).availableTags
-    const tag = tags.find(tag => tag.id === (newTags.length > oldTags.length ? newTags.find(tag => !oldTags.includes(tag)) : oldTags.find(tag => !newTags.includes(tag))))!
-    const tagEmoji = tag.emoji 
-        ? tag.emoji.id 
-            ? `<:${tag.emoji.name}:${tag.emoji.id}> `
-            : tag.emoji.name + ' '
-        : ''
+    if (oldThread.guildId === DD_SERVER_ID && oldThread.parent?.type === ChannelType.GuildForum) {
+        if (keywords.some(w => oldThread.parent?.name.includes(w)) && oldTags.join() !== newTags.join()) {
+            const changedTagID = newTags.length > oldTags.length
+                ? newTags.find(tag => !oldTags.includes(tag))
+                : oldTags.find(tag => !newTags.includes(tag))
+            const changedTag = oldThread.parent.availableTags.find(tag => tag.id === changedTagID)!
+            const tagEmoji = changedTag.emoji
+                ? changedTag.emoji.id 
+                    ? `<:${changedTag.emoji.name}:${changedTag.emoji.id}> `
+                    : changedTag.emoji.name + ' '
+                : ''
 
-    if (newTags.length > oldTags.length) {
-        newThread.send({content: `<@${oldThread.ownerId}>, your post has been tagged as **${tagEmoji + tag.name}**.`, flags: ['SuppressNotifications']})
-    } else {
-        newThread.send({content: `<@${oldThread.ownerId}>, the **${tagEmoji + tag.name}** tag has been removed from your post.`, flags: ['SuppressNotifications']})
+            const notificationContent = newTags.length > oldTags.length
+                ? `<@${oldThread.ownerId}>, your post has been tagged as **${tagEmoji + changedTag.name}**.`
+                : `<@${oldThread.ownerId}>, the **${tagEmoji + changedTag.name}** tag has been removed from your post.`
+
+            newThread.send({ content: notificationContent, flags: [ 'SuppressNotifications' ] })
+        }
     }
 }
