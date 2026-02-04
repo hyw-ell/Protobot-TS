@@ -1,11 +1,4 @@
-import {
-    Client,
-    Collection,
-    ContextMenuCommandBuilder,
-    GatewayIntentBits,
-    Interaction,
-    SlashCommandBuilder
-} from 'discord.js'
+import { Client, Collection, ContextMenuCommandBuilder, GatewayIntentBits, Interaction, SlashCommandBuilder } from 'discord.js'
 import { MILLISECONDS } from '../data/time.js'
 
 export type Command = {

@@ -10,24 +10,20 @@ import { database } from '../database/database.js'
 export async function onInteractionCreate(interaction: Interaction<CacheType>) {
     if (interaction.isCommand() || interaction.isMessageContextMenuCommand()) {
         if (isBlacklisted(interaction.user.id)) {
-            interaction.reply(`${interaction.user} you have been banned running commands.`)
+            interaction.reply(`${interaction.user} you are currently banned from running commands.`)
             return
         }
     
         const command = client.commands.get(interaction.commandName)
-        if (!command) {
+        if (command) {
+            sendToChannel(CHANNEL_IDS.COMMAND_LOG, `:scroll:  **${interaction.user.tag}** ran the command \`${interaction.commandName}\` in **${interaction.guild?.name ?? 'Direct Messages'}** (${interaction.guildId ?? interaction.channelId})`)
+            command.execute(interaction)
+        } else {
             interaction.reply({
                 content: 'Failed to load command. Please try again later.',
                 flags: MessageFlags.Ephemeral
             })
-            return
         }
-
-        const logMessage = `**${interaction.user.tag}** ran the command \`${interaction.commandName}\` `
-                         + `in **${interaction.guild?.name ?? 'Direct Messages'}**`
-
-        command.execute(interaction)
-        sendToChannel(CHANNEL_IDS.COMMAND_LOG, `:scroll:  ${logMessage} (${interaction.guildId ?? interaction.channelId})`)
     }
 
     if (interaction.isModalSubmit()) {

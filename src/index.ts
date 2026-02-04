@@ -1,4 +1,5 @@
 import 'dotenv/config'
+import './cron/index.js'
 
 import { VoiceChannel } from 'discord.js'
 import { inspect } from 'util'
@@ -11,9 +12,6 @@ import { CHANNEL_IDS, BOT_TOKEN } from './data/discord.js'
 import { onInteractionCreate, onMessageCreate, onThreadCreate, onThreadUpdate } from './events/index.js'
 import { registerCommands, sendToChannel } from './utils/discord.js'
 
-import './cron/index.js'
-import './events/index.js'
-
 export const client = new BotClient()
 
 export async function runStartup() {
@@ -23,8 +21,8 @@ export async function runStartup() {
 }
 runStartup()
 
-registerFont('assets/Arial.ttf', {family: 'Arial'})
-registerFont('assets/Arial Bold.ttf', {family: 'Arial Bold'})
+registerFont('assets/Arial.ttf', { family: 'Arial' })
+registerFont('assets/Arial Bold.ttf', { family: 'Arial Bold' })
 
 client.on('clientReady', async () => {
 	client.user?.setActivity('/help')
