@@ -6,6 +6,6 @@ General Purpose Discord bot for Dungeon Defenders 2. Written in TypeScript with 
 
 
 # Links
-* [Protobot's Website](https://cryotalis.github.io/Protobot)
+* [Protobot's Website](https://hyw-ell.github.io/Protobot)
 * [Protobot's Public Database](https://docs.google.com/spreadsheets/d/1yOjZhkn9z8dJ8HMD0YSUl7Ijgd9o1KJ62Ecf4SgyTdU)
 * [Protobot's Support Discord Server](https://discord.gg/YtwzVSp)

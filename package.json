@@ -11,15 +11,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Cryotalis/Protobot-TS.git"
+    "url": "git+https://github.com/hyw-ell/Protobot-TS.git"
   },
   "keywords": [],
   "author": "Hywell",
   "license": "GPL-3.0",
   "bugs": {
-    "url": "https://github.com/Cryotalis/Protobot-TS/issues"
+    "url": "https://github.com/hyw-ell/Protobot-TS/issues"
   },
-  "homepage": "https://github.com/Cryotalis/Protobot-TS#readme",
+  "homepage": "https://github.com/hyw-ell/Protobot-TS#readme",
   "dependencies": {
     "@google-cloud/translate": "^9.3.0",
     "axios": "^1.13.2",
