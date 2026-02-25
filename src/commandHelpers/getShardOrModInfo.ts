@@ -30,10 +30,8 @@ export function getShardInfo(shard: GoogleSpreadsheetRow<ShardInfo>) {
     return { embeds: [embed], files: [difficultyIcon, shardIcon] }
 }
 
-export function getModInfo(modInput: GoogleSpreadsheetRow<ModInfo>) {
-    const mod = getServoVariant(modInput)
+export function getModInfo(mod: GoogleSpreadsheetRow<ModInfo>) {
     const modTypeIcon = attachments[path.basename(mod.get('image'))]
-    
     const embed = new EmbedBuilder()
         .setColor('Blue')
         .setAuthor({ name: mod.get('name') })
@@ -47,15 +45,9 @@ export function getModInfo(modInput: GoogleSpreadsheetRow<ModInfo>) {
                 inline: false
             }
         ])
-        .setFooter({text: `${mod.get('type')} Mod`})
+        .setFooter({ text: `${mod.get('type')} Mod` })
     
     return { embeds: [embed], files: [modTypeIcon] }
-}
-
-function getServoVariant(mod: GoogleSpreadsheetRow<ModInfo>) {
-    const servoName = mod.get('name').replace('Chip', 'Servo')
-    const servoVariant = database.mods.find(mod => mod.get('name') === servoName)
-    return servoVariant || mod
 }
 
 export function getServoVariantName(modName: string) {
