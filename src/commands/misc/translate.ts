@@ -1,7 +1,7 @@
 import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder } from 'discord.js'
 import { languageCodes } from '../../data/languageCodes.js'
 import { findBestCIMatch } from '../../utils/string.js'
-import { gTranslate } from '../../commandHelpers/translate.js'
+import { Translate } from '@google-cloud/translate/build/src/v2/index.js'
 
 export const command = {
 	data: new SlashCommandBuilder()
@@ -23,6 +23,13 @@ export const command = {
 	,
 	async execute(interaction: ChatInputCommandInteraction) {
 		await interaction.deferReply()
+
+		const gTranslate = new Translate({
+			credentials: {
+				client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL!,
+				private_key: process.env.GOOGLE_PRIVATE_KEY!
+			}
+		})
 
 		const textInput = interaction.options.getString('text')!
 		const sourceLangInput = interaction.options.getString('from')

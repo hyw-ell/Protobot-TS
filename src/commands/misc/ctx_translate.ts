@@ -1,6 +1,6 @@
 import { MessageContextMenuCommandInteraction, EmbedBuilder, ContextMenuCommandBuilder, MessageFlags } from 'discord.js'
+import { Translate } from '@google-cloud/translate/build/src/v2/index.js'
 import { languageCodes } from '../../data/languageCodes.js'
-import { gTranslate } from '../../commandHelpers/translate.js'
 
 export const command = {
 	data: new ContextMenuCommandBuilder()
@@ -8,6 +8,13 @@ export const command = {
 		.setType(3)
 	,
 	async execute(interaction: MessageContextMenuCommandInteraction) {
+		const gTranslate = new Translate({
+			credentials: {
+				client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL!,
+				private_key: process.env.GOOGLE_PRIVATE_KEY!
+			}
+		})
+
 		const textInput = interaction.targetMessage.content
         if (!textInput) {
 			interaction.reply({ content: 'I could not find any text to translate.', flags: MessageFlags.Ephemeral })
