@@ -25,10 +25,10 @@ registerFont('assets/Arial.ttf', { family: 'Arial' })
 registerFont('assets/Arial Bold.ttf', { family: 'Arial Bold' })
 
 client.on('clientReady', async () => {
-	client.user?.setActivity('/help')
+	client.user?.setActivity('Dungeon Defenders 2')
 
-	console.log('Protobot is now online')
-	sendToChannel(CHANNEL_IDS.COMMAND_LOG, '**:white_check_mark:  Protobot is now online**')
+	console.log(`${client.user?.displayName} is now online`)
+	sendToChannel(CHANNEL_IDS.COMMAND_LOG, `**:white_check_mark:  ${client.user?.displayName} is now online**`)
 
 	const serverCountChannel = await client.channels.fetch(CHANNEL_IDS.SERVER_COUNT) as VoiceChannel
 	schedule('0 * * * *', () => { runStartup() })

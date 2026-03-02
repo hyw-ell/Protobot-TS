@@ -16,7 +16,10 @@ export async function onInteractionCreate(interaction: Interaction<CacheType>) {
     
         const command = client.commands.get(interaction.commandName)
         if (command) {
-            sendToChannel(CHANNEL_IDS.COMMAND_LOG, `:scroll:  **${interaction.user.tag}** ran the command \`${interaction.commandName}\` in **${interaction.guild?.name ?? 'Direct Messages'}** (${interaction.guildId ?? interaction.channelId})`)
+            sendToChannel(CHANNEL_IDS.COMMAND_LOG, {
+                content: `:scroll:  **${interaction.user.tag}** ran the command \`${interaction.commandName}\` in **${interaction.guild?.name ?? 'Direct Messages'}** (${interaction.guildId ?? interaction.channelId})`,
+                files: interaction.isChatInputCommand() ? [{ attachment: Buffer.from(JSON.stringify(interaction.options, null, "\t")), name: 'options.json' }] : undefined
+            })
             command.execute(interaction)
         } else {
             interaction.reply({
