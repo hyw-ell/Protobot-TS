@@ -8,7 +8,7 @@ import { sendToChannel } from '../utils/discord.js'
 schedule('* * * * *', () => {
 	if (!database.youtubeChannels) return
 	database.youtubeChannels.forEach(async channel => {
-		const feed = await new Parser().parseURL(`https://www.youtube.com/feeds/videos.xml?channel_id=${channel.get('youtubeID')}`).catch(() => undefined) // Parse the RSS Feed for the channel, ignore any 404 errors if the rss feed is unavailable
+		const feed = await new Parser().parseURL(`https://www.youtube.com/feeds/videos.xml?channel_id=${channel.get('channelID')}`).catch(() => undefined) // Parse the RSS Feed for the channel, ignore any 404 errors if the rss feed is unavailable
 		if (!feed) return
 
 		const newVideo = feed.items[0] // The most recently published video
