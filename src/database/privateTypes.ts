@@ -4,8 +4,7 @@ type UserLogKeys = 'lastMsgID' | 'lastMsgTimestamp' | 'username' | 'userID'
 export type UserLogInfo = { [K in UserLogKeys]: string }
 
 // YouTube Post Notifications
-// Probably should change to channelID rather than youtubeID
-type YTPNKeys = 'youtubeID' | 'recentVideos' | 'discordChannelID'
+type YTPNKeys = 'channelID' | 'recentVideos' | 'discordChannelID'
 type YTPNInfo = { [K in YTPNKeys]: string }
 
 // Twitch Live Notifications

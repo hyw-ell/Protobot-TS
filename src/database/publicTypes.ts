@@ -20,8 +20,7 @@ type DefenseInfo = { [K in DefenseKeys]: string }
 type LinkKeys = 'author' | 'name' | 'description' | 'link'
 type LinkInfo = { [K in LinkKeys]: string }
 
-// Tag should be changed to username at some point (because that's what it really is now)
-type ContributorKeys = 'img' | 'name' | 'tag' | 'id' | 'description' | 'roles' | 'imageURL'
+type ContributorKeys = 'img' | 'name' | 'username' | 'id' | 'description' | 'roles' | 'imageURL'
 type ContributorInfo = { [K in ContributorKeys]: string }
 
 type GenericKeys = 'name' | 'value'
