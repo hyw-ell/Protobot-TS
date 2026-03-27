@@ -2,7 +2,6 @@ import 'dotenv/config'
 import './cron/index.js'
 
 import { VoiceChannel } from 'discord.js'
-import { inspect } from 'util'
 import { schedule } from 'node-cron'
 import { registerFont } from 'canvas'
 import { BotClient } from './classes/BotClient.js'
@@ -10,7 +9,7 @@ import { connectDatabase } from './database/database.js'
 import { loadDefenseBuilds } from './database/defenseBuilds.js'
 import { CHANNEL_IDS, BOT_TOKEN } from './data/discord.js'
 import { onInteractionCreate, onMessageCreate, onThreadCreate, onThreadUpdate } from './events/index.js'
-import { registerCommands, sendToChannel } from './utils/discord.js'
+import { registerCommands, sendToChannel, sendToErrorChannel } from './utils/discord.js'
 
 export const client = new BotClient()
 
@@ -44,11 +43,4 @@ client.on('threadUpdate', onThreadUpdate)
 
 client.login(BOT_TOKEN)
 
-process.on('uncaughtException', error => {
-	sendToChannel(
-		CHANNEL_IDS.ERROR,
-		{
-			files: [{ attachment: Buffer.from(inspect(error, { depth: null })), name: 'error.ts' }]
-		}
-	)
-})
+process.on('uncaughtException', error => sendToErrorChannel(error))
