@@ -32,7 +32,7 @@ export function createAMLogEntry(msg: Message, reason: string) {
  * @param message - The offending message
  * @param user - The database entry for the user who violated trade chat rules
  */
-export function DMRules(violation: 'Cooldown' | 'Formatting', message: Message, user: GoogleSpreadsheetRow<UserLogInfo>){
+export function DMRules(violation: 'Cooldown' | 'Formatting', message: Message, user: GoogleSpreadsheetRow<UserLogInfo>) {
     const violationDetails = (violation === 'Cooldown')
         ? 'You cannot post more than once per 16 hours!'
         : 'Your Looking-For-Trade post did not follow the correct format!'

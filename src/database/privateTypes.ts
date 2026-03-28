@@ -1,5 +1,3 @@
-import { GoogleSpreadsheetRow, GoogleSpreadsheetWorksheet } from 'google-spreadsheet'
-
 type UserLogKeys = 'lastMsgID' | 'lastMsgTimestamp' | 'username' | 'userID'
 export type UserLogInfo = { [K in UserLogKeys]: string }
 
@@ -26,9 +24,10 @@ export const privateDatabaseConfig = {
     blacklist: { name: 'Blacklist', type: {} as BlacklistInfo },
 } as const
 
-type dbConfigKeys = keyof typeof privateDatabaseConfig
-export type PrivateDatabaseSchema = {
-    [K in dbConfigKeys as `${K}Table`]: GoogleSpreadsheetWorksheet
-} & {
-    [K in dbConfigKeys]: Array<GoogleSpreadsheetRow<typeof privateDatabaseConfig[K]['type']>>
+// ============================ DOE Backer Database ============================
+type BackerKeys = 'email' | 'discord_username' | 'discord_ID' | 'claim_timestamp'
+type BackerInfo = { [K in BackerKeys]: string }
+
+export const DOEBackerDatabaseConfig = {
+    DOEBackers: { name: 'Backer Info', type: {} as BackerInfo},
 }

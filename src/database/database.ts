@@ -1,10 +1,17 @@
-import { GoogleSpreadsheet, GoogleSpreadsheetWorksheet } from 'google-spreadsheet'
+import { GoogleSpreadsheet, GoogleSpreadsheetRow, GoogleSpreadsheetWorksheet } from 'google-spreadsheet'
 import { JWT } from 'google-auth-library'
 
-import { PublicDatabaseSchema, publicDatabaseConfig } from './publicTypes.js'
-import { PrivateDatabaseSchema, privateDatabaseConfig } from './privateTypes.js'
+import { publicDatabaseConfig } from './publicTypes.js'
+import { DOEBackerDatabaseConfig, privateDatabaseConfig } from './privateTypes.js'
 
-type DatabaseSchema = PublicDatabaseSchema & PrivateDatabaseSchema
+type dbTypes = typeof publicDatabaseConfig & typeof privateDatabaseConfig & typeof DOEBackerDatabaseConfig
+type dbKeys = keyof dbTypes
+export type DatabaseSchema = {
+    [K in dbKeys as `${K}Table`]: GoogleSpreadsheetWorksheet
+} & {
+    [K in dbKeys]: Array<GoogleSpreadsheetRow<dbTypes[K]['type']>>
+}
+
 export const database = {} as DatabaseSchema
 
 const serviceAccountAuth = new JWT({
@@ -13,23 +20,24 @@ const serviceAccountAuth = new JWT({
 	scopes: ['https://www.googleapis.com/auth/spreadsheets']
 })
 
+// IDEA Factor this so that a list of sheet IDs and configs can be used to load the DB instead.
 const publicDB = new GoogleSpreadsheet('1yOjZhkn9z8dJ8HMD0YSUl7Ijgd9o1KJ62Ecf4SgyTdU', serviceAccountAuth)
 const privateDB = new GoogleSpreadsheet(process.env.PRIVATE_DB_ID!, serviceAccountAuth)
+const DOEBackerDB = new GoogleSpreadsheet(process.env.DOE_BACKER_DB_ID!, serviceAccountAuth)
 export const defenseBuildsDB = new GoogleSpreadsheet('1sjBA60Fr9ryVnw4FUIMU2AVXbKw395Tdz7j--EAUA1A', serviceAccountAuth)
 
 export async function connectDatabase() {
     await Promise.all([
         loadDatabase(publicDB, publicDatabaseConfig),
-        loadDatabase(privateDB, privateDatabaseConfig)
+        loadDatabase(privateDB, privateDatabaseConfig),
+        loadDatabase(DOEBackerDB, DOEBackerDatabaseConfig)
     ])
 
     console.log('Database connection successful')
 }
 
 type DatabaseConfig = { [key: string]: { name: string, type: any } }
-async function loadDatabase<C extends DatabaseConfig>(
-    sheetDB: GoogleSpreadsheet, sheetConfig: C
-) : Promise<void> {
+async function loadDatabase<C extends DatabaseConfig>(sheetDB: GoogleSpreadsheet, sheetConfig: C) : Promise<void> {
     try {
         await sheetDB.loadInfo()
 

@@ -17,6 +17,8 @@ export const CHANNEL_IDS = {
     WIKI_CHANGES: '1072236073515745451',
 }
 
+export const DOE_BACKER_ROLE_ID = '1470468166055628811'
+
 export const heroEmotes: {[char: string]: string} = {
     'All': '**All**',
     'Monk': '<:monk:250374207194529812>',

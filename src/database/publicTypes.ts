@@ -1,5 +1,3 @@
-import { GoogleSpreadsheetRow, GoogleSpreadsheetWorksheet } from 'google-spreadsheet'
-
 type ModKeys = 'name' | 'description' | 'drop' | 'hero' | 'type' | 'image'
 export type ModInfo = { [K in ModKeys]: string }
 
@@ -37,10 +35,3 @@ export const publicDatabaseConfig = {
     faq: { name: 'FAQ', type: {} as GenericInfo },
     contributors: { name: 'Contributors', type: {} as ContributorInfo },
 } as const
-
-type dbConfigKeys = keyof typeof publicDatabaseConfig
-export type PublicDatabaseSchema = {
-    [K in dbConfigKeys as `${K}Table`]: GoogleSpreadsheetWorksheet
-} & {
-    [K in dbConfigKeys]: Array<GoogleSpreadsheetRow<typeof publicDatabaseConfig[K]['type']>>
-}
