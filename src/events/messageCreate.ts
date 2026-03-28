@@ -1,6 +1,6 @@
 import { EmbedBuilder, Message, OmitPartialGroupDMChannel } from 'discord.js'
 import { database } from '../database/database.js'
-import { UserLogInfo } from '../database/privateTypes.js'
+import { UserLogInfo } from '../database/privateDBConfig.js'
 import { createAMLogEntry, DMRules } from './eventHelpers/tradeAutomod.js'
 import { sendToChannel } from '../utils/discord.js'
 import { CHANNEL_IDS, DD_SERVER_ID } from '../data/discord.js'

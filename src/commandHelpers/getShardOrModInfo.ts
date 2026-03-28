@@ -1,6 +1,6 @@
 import { EmbedBuilder } from 'discord.js'
 import { GoogleSpreadsheetRow } from 'google-spreadsheet'
-import { ModInfo, ShardInfo } from '../database/publicTypes.js'
+import { ModInfo, ShardInfo } from '../database/publicDBConfig.js'
 import { heroEmotes } from '../data/discord.js'
 import { attachments } from '../data/assets.js'
 import { database } from '../database/database.js'

@@ -1,7 +1,7 @@
 import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder } from 'discord.js'
 import { processItem } from '../../commandHelpers/processPrice.js'
 import { database } from '../../database/database.js'
-import { rarityName } from '../../database/publicTypes.js'
+import { rarityName } from '../../database/publicDBConfig.js'
 import { findBestCIMatch } from '../../utils/string.js'
 import { getServoVariantName } from '../../commandHelpers/getShardOrModInfo.js'
 

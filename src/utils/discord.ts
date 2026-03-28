@@ -52,7 +52,6 @@ export async function sendToErrorChannel(error: Error, textContent?: string) {
     })
 }
 
-
 /**
  * Valid Discord usernames have 2 ~ 32 characters. Only lowercase letters, numbers, underscores, and periods are allowed.
  */

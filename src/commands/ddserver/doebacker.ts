@@ -11,6 +11,9 @@ export const command = {
 	,
 	async execute(interaction: ChatInputCommandInteraction) {
         await interaction.deferReply()
+
+        // TODO Add a check for whether they already have the backer role here
+
 		const backer = database.DOEBackers.find(b => {
             const username = b.get('discord_username')
             return (username === interaction.user.username) || (username === interaction.user.id)

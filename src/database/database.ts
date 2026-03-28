@@ -1,8 +1,8 @@
 import { GoogleSpreadsheet, GoogleSpreadsheetRow, GoogleSpreadsheetWorksheet } from 'google-spreadsheet'
 import { JWT } from 'google-auth-library'
 
-import { publicDatabaseConfig } from './publicTypes.js'
-import { DOEBackerDatabaseConfig, privateDatabaseConfig } from './privateTypes.js'
+import { publicDatabaseConfig } from './publicDBConfig.js'
+import { DOEBackerDatabaseConfig, privateDatabaseConfig } from './privateDBConfig.js'
 
 type dbTypes = typeof publicDatabaseConfig & typeof privateDatabaseConfig & typeof DOEBackerDatabaseConfig
 type dbKeys = keyof dbTypes

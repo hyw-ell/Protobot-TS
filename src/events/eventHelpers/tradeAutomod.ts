@@ -1,6 +1,6 @@
 import { codeBlock, EmbedBuilder, Message, time } from 'discord.js'
 import { GoogleSpreadsheetRow } from 'google-spreadsheet'
-import { UserLogInfo } from '../../database/privateTypes.js'
+import { UserLogInfo } from '../../database/privateDBConfig.js'
 import { MILLISECONDS } from '../../data/time.js'
 import { truncateString } from '../../utils/string.js'
 

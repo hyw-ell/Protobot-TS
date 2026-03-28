@@ -1,6 +1,6 @@
 import { GoogleSpreadsheetRow } from 'google-spreadsheet'
 import { database} from '../database/database.js'
-import { PriceInfo } from '../database/publicTypes.js'
+import { PriceInfo } from '../database/publicDBConfig.js'
 
 function parsePrice(price: string) {
     price = price.replace(/💡|💬/, '').trim()
