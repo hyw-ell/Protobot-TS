@@ -11,7 +11,7 @@ const keywords = [
 export async function onThreadCreate(thread: AnyThreadChannel) {
     if (thread.guildId === DD_SERVER_ID && thread.parent?.type === ChannelType.GuildForum) {
         if (keywords.some(w => thread.parent?.name.includes(w))) {
-            const threadMessages = await thread.messages.fetch()
+            const threadMessages = await thread.awaitMessages({ max: 1, time: 5000 })
             const starterMessage = threadMessages.first()
         
             await starterMessage?.react('thumbs_up:1468453543424950495')
