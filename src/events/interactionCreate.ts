@@ -1,12 +1,13 @@
 import { CacheType, EmbedBuilder, Interaction, MessageFlags } from 'discord.js'
 import { client } from '../index.js'
-import { sendToChannel, sendToErrorChannel } from '../utils/discord.js'
+import { sendToChannel } from '../utils/discord.js'
 import { CHANNEL_IDS, DOE_BACKER_ROLE_ID } from '../data/discord.js'
 import { isBlacklisted } from '../database/helpers.js'
 import { handlePostModalSubmit } from './eventHelpers/handlePostModalSubmit.js'
 import { findBestCIMatch } from '../utils/string.js'
 import { database } from '../database/database.js'
 import { handleDOEBackerModal } from './eventHelpers/handleDOEBackerModal.js'
+import { inspect } from 'util'
 
 export async function onInteractionCreate(interaction: Interaction<CacheType>) {
     if (interaction.isCommand() || interaction.isMessageContextMenuCommand()) {
@@ -50,7 +51,10 @@ export async function onInteractionCreate(interaction: Interaction<CacheType>) {
             if (interaction.customId.includes('approve')) {
                 const member = await interaction.guild!.members.fetch(userID)
                 const result = await member.roles.add(DOE_BACKER_ROLE_ID).catch((e) => {
-                    sendToErrorChannel(e, `Failed to add DOE Backer role for user: ${member.user.username}`)
+                    sendToChannel(CHANNEL_IDS.BACKER_VERIFICATION, {
+                        content: `Failed to add DOE Backer role for user: ${member.user.username}`,
+                        files: [{ attachment: Buffer.from(inspect(e, { depth: null })), name: 'error.ts' }]
+                    })
                     return undefined
                 })
 
@@ -78,7 +82,10 @@ export async function onInteractionCreate(interaction: Interaction<CacheType>) {
             
             interaction.update({ embeds: [updatedStatusEmbed] })
             user.send(statusMessage).catch(e => {
-                sendToErrorChannel(e, `Could not send DOE Backer status message to user: ${interaction.user.username}`)
+                sendToChannel(CHANNEL_IDS.BACKER_VERIFICATION, {
+                    content: `Could not send DOE Backer status message to user: ${interaction.user.username}`,
+                    files: [{ attachment: Buffer.from(inspect(e, { depth: null })), name: 'error.ts' }]
+                })
             })
         }
     }

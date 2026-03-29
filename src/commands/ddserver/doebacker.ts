@@ -1,8 +1,9 @@
 import { ChatInputCommandInteraction, InteractionContextType, SlashCommandBuilder } from 'discord.js'
 import { database } from '../../database/database.js'
-import { DOE_BACKER_ROLE_ID } from '../../data/discord.js'
-import { sendToErrorChannel } from '../../utils/discord.js'
+import { CHANNEL_IDS, DOE_BACKER_ROLE_ID } from '../../data/discord.js'
+import { sendToChannel } from '../../utils/discord.js'
 import { DOEBackerModal } from '../../commandHelpers/doebackerModal.js'
+import { inspect } from 'util'
 
 export const command = {
 	data: new SlashCommandBuilder()
@@ -26,7 +27,10 @@ export const command = {
         
         if (backer) {
             const result = await member.roles.add(DOE_BACKER_ROLE_ID).catch((e) => {
-                sendToErrorChannel(e, `Failed to add DOE Backer role for user: ${member.user.username}`)
+                sendToChannel(CHANNEL_IDS.BACKER_VERIFICATION, {
+                    content: `Failed to add DOE Backer role for user: ${member.user.username}`,
+                    files: [{ attachment: Buffer.from(inspect(e, { depth: null })), name: 'error.ts' }]
+                })
                 return undefined
             })
             
