@@ -1,11 +1,12 @@
-import { CacheType, ChannelType, Interaction, MessageFlags } from 'discord.js'
+import { CacheType, EmbedBuilder, Interaction, MessageFlags } from 'discord.js'
 import { client } from '../index.js'
-import { sendToChannel } from '../utils/discord.js'
-import { CHANNEL_IDS } from '../data/discord.js'
+import { sendToChannel, sendToErrorChannel } from '../utils/discord.js'
+import { CHANNEL_IDS, DOE_BACKER_ROLE_ID } from '../data/discord.js'
 import { isBlacklisted } from '../database/helpers.js'
 import { handlePostModalSubmit } from './eventHelpers/handlePostModalSubmit.js'
 import { findBestCIMatch } from '../utils/string.js'
 import { database } from '../database/database.js'
+import { handleDOEBackerModal } from './eventHelpers/handleDOEBackerModal.js'
 
 export async function onInteractionCreate(interaction: Interaction<CacheType>) {
     if (interaction.isCommand() || interaction.isMessageContextMenuCommand()) {
@@ -30,8 +31,55 @@ export async function onInteractionCreate(interaction: Interaction<CacheType>) {
     }
 
     if (interaction.isModalSubmit()) {
-        if (interaction.customId === 'postModal' && interaction.channel?.type === ChannelType.GuildText) {
-            handlePostModalSubmit(interaction)
+        switch (interaction.customId) {
+            case 'postModal': handlePostModalSubmit(interaction); break;
+            case 'DOEBackerModal': handleDOEBackerModal(interaction); break;
+        }
+    }
+
+    if (interaction.isButton()) {
+        if (/(approve|deny)DOEBacker/.test(interaction.customId)) {
+            await interaction.deferReply()
+
+            const username = interaction.customId.match(/(?<=DOEBacker: ).+?(?= )/)!.toString()
+            const userID = interaction.customId.match(/(?<=\()\d+/)!.toString()
+            const user = await client.users.fetch(userID)
+            const updatedStatusEmbed = EmbedBuilder.from(interaction.message.embeds[0])
+            let statusMessage = ''
+            
+            if (interaction.customId.includes('approve')) {
+                const member = await interaction.guild!.members.fetch(userID)
+                const result = await member.roles.add(DOE_BACKER_ROLE_ID).catch((e) => {
+                    sendToErrorChannel(e, `Failed to add DOE Backer role for user: ${member.user.username}`)
+                    return undefined
+                })
+
+                if (!result) {
+                    interaction.reply(`Failed to add DOE Backer role for user: ${username}`)
+                    return
+                }
+
+                statusMessage = 'You have been granted the DOE Backer role. Thank you for being a backer of Defenders of Etheria!'
+                updatedStatusEmbed
+                    .setColor('Green')
+                    .spliceFields(2, 1, { name: 'Status', value: `Approved by ${interaction.user}`, inline: true })
+
+                const timestamp = new Date().toUTCString()
+                const backer = database.DOEBackers.find(backer => backer.get('email_claim_by') === `${username} (${userID})`)!
+                backer.set('discord_ID', userID)
+                backer.set('role_claimed_at', timestamp)
+                await backer.save()
+            } else {
+                statusMessage = 'Your manual email verification request for the DOE Backer role has been denied. Please contact [...] if you have any further questions.'
+                updatedStatusEmbed
+                    .setColor('Red')
+                    .spliceFields(2, 1, { name: 'Status', value: `Rejected by ${interaction.user}`, inline: true })
+            }
+            
+            interaction.update({ embeds: [updatedStatusEmbed] })
+            user.send(statusMessage).catch(e => {
+                sendToErrorChannel(e, `Could not send DOE Backer status message to user: ${interaction.user.username}`)
+            })
         }
     }
     

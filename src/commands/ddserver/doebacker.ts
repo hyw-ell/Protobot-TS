@@ -2,6 +2,7 @@ import { ChatInputCommandInteraction, InteractionContextType, SlashCommandBuilde
 import { database } from '../../database/database.js'
 import { DOE_BACKER_ROLE_ID } from '../../data/discord.js'
 import { sendToErrorChannel } from '../../utils/discord.js'
+import { DOEBackerModal } from '../../commandHelpers/doebackerModal.js'
 
 export const command = {
 	data: new SlashCommandBuilder()
@@ -12,7 +13,11 @@ export const command = {
 	async execute(interaction: ChatInputCommandInteraction) {
         await interaction.deferReply()
 
-        // TODO Add a check for whether they already have the backer role here
+        const member = await interaction.guild!.members.fetch(interaction.user)
+        if (member.roles.cache.has(DOE_BACKER_ROLE_ID)) {
+            interaction.editReply('You already have the DOE Backer role!')
+            return
+        }
 
 		const backer = database.DOEBackers.find(b => {
             const username = b.get('discord_username')
@@ -20,23 +25,20 @@ export const command = {
         })
         
         if (backer) {
-            const member = await interaction.guild!.members.fetch(interaction.user)
-            const res = await member.roles.add(DOE_BACKER_ROLE_ID).catch((e) => {
+            const result = await member.roles.add(DOE_BACKER_ROLE_ID).catch((e) => {
                 sendToErrorChannel(e, `Failed to add DOE Backer role for user: ${member.user.username}`)
                 return undefined
             })
             
-            if (res) {
+            if (result) {
                 const timestamp = new Date().toUTCString()
                 backer.set('discord_ID', member.id)
-                backer.set('claim_timestamp', timestamp)
+                backer.set('role_claimed_at', timestamp)
                 await backer.save()
             }
             interaction.editReply('You have been granted the DOE Backer role! Thank you for being a backer of Defenders of Etheria!')
         } else {
-            // TODO Add email verification
-            // IDEA This could be done by showing the user a form where they can submit their email, which can then be sent to a private channel on the DD server.
-            // IDEA Then, CG officials or an admin who has access to the tracking sheet can verify the email manually and double check the user's username
+            interaction.showModal(DOEBackerModal)
         }
 	}
 }

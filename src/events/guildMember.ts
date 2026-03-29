@@ -11,15 +11,15 @@ export async function onGuildMemberAdd(member: GuildMember) {
         })
     
         if (backer) {
-            const res = await member.roles.add(DOE_BACKER_ROLE_ID).catch((e) => {
+            const result = await member.roles.add(DOE_BACKER_ROLE_ID).catch((e) => {
                 sendToErrorChannel(e, `Failed to add DOE Backer role for user: ${member.user.username}`)
                 return undefined
             })
             
-            if (res) {
+            if (result) {
                 const timestamp = new Date().toUTCString()
                 backer.set('discord_ID', member.id)
-                backer.set('claim_timestamp', timestamp)
+                backer.set('role_claimed_at', timestamp)
                 await backer.save()
             }
         }

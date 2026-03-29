@@ -86,16 +86,16 @@ export async function distributeDOEBackerRole() {
 		}
 
 		if (backerInServer) {
-			const res = await backerInServer.roles.add(DOE_BACKER_ROLE_ID).catch(e => {
+			const result = await backerInServer.roles.add(DOE_BACKER_ROLE_ID).catch(e => {
 				console.log(`Error trying to add role to user with username: ${username}`)
 				console.error(e)
 				return undefined
 			})
 
-			if (res) {
+			if (result) {
 				const timestamp = new Date().toUTCString()
 				backer.set('discord_ID', backerInServer.id)
-				backer.set('claim_timestamp', timestamp)
+				backer.set('role_claimed_at', timestamp)
 				await backer.save()
 			}
 		} else {
