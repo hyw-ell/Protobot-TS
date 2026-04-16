@@ -28,7 +28,12 @@ export const command = {
 
 		const weekNum = Math.floor((now.getTime() - TIMESTAMP) / MILLISECONDS.WEEK % 4)
 		const weekNames = ['Fire', 'Water', 'Storm', 'Earth'].map((w, i) => i === weekNum ? `**${w}**` : w)
-		const rumbleIcon = attachments['Elemental_Rumble_Icon.png']
+		const rumbleIcons = [
+			attachments['Fire_Week_Rumble_Icon.png'],
+			attachments['Water_Week_Rumble_Icon.png'],
+			attachments['Storm_Week_Rumble_Icon.png'],
+			attachments['Earth_Week_Rumble_Icon.png'],
+		]
 		const infographics = [
 			attachments['Fire_Week_Items.png'],
 			attachments['Water_Week_Items.png'],
@@ -39,7 +44,7 @@ export const command = {
 		const rumbleEmbed = new EmbedBuilder()
 			.setColor('Blue')
 			.setTitle('__**Time until next rotation:**__')
-			.setThumbnail(`attachment://${rumbleIcon.name}`)
+			.setThumbnail(`attachment://${rumbleIcons[weekNum].name}`)
 			.addFields([
 				{
 					name: `\u200B    ${days}           ${hours}            ${minutes}             ${seconds}`,
@@ -49,10 +54,14 @@ export const command = {
 				{ name: '**Next Rotation At**:', value: `<t:${nextDate.getTime()/1000}:F>`}
 			])
 			.setImage(`attachment://${infographics[weekNum].name}`)
+			.setFooter({ 
+				iconURL: `attachment://${attachments['Luffy_Icon.png'].name}`,
+				text: 'Images designed by @6.9s (𓆩Luffy𓆪⁶⁹)'
+			})
 
 		interaction.reply({
 			embeds: [rumbleEmbed],
-			files: [rumbleIcon, infographics[weekNum]]
+			files: [rumbleIcons[weekNum], infographics[weekNum], attachments['Luffy_Icon.png']]
 		})
 	}
 }

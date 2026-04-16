@@ -9,7 +9,7 @@ import { connectDatabase } from './database/database.js'
 import { loadDefenseBuilds } from './database/defenseBuilds.js'
 import { CHANNEL_IDS, BOT_TOKEN } from './data/discord.js'
 import { onInteractionCreate, onMessageCreate, onThreadCreate, onThreadUpdate } from './events/index.js'
-import { registerCommands, sendToChannel, sendToErrorChannel } from './utils/discord.js'
+import { distributeDOEBackerRole, registerCommands, sendToChannel, sendToErrorChannel } from './utils/discord.js'
 import { onGuildMemberAdd } from './events/guildMember.js'
 
 export const client = new BotClient()
@@ -43,7 +43,7 @@ client.on('interactionCreate', onInteractionCreate)
 client.on('messageCreate', onMessageCreate)
 client.on('threadCreate', onThreadCreate)
 client.on('threadUpdate', onThreadUpdate)
-client.on('guildMemberAdd', onGuildMemberAdd)
+// client.on('guildMemberAdd', onGuildMemberAdd)
 
 client.login(BOT_TOKEN)
 
