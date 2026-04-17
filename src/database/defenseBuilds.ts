@@ -11,18 +11,52 @@ export interface defenseObject {
 
 export let defenseBuildData: defenseObject[] = []
 
+/** Loads defense builds from Sheet of Sheets */
 export async function loadDefenseBuilds() {
     await defenseBuildsDB.loadInfo()
 
 	const buildData: defenseObject[] = []
+	const sheet = defenseBuildsDB.sheetsByTitle['[General] Tower Builds']
+	await sheet.loadCells()
+
+	for (let col = 2; col < 20; col += 14) {
+		for (let row = 6; row < sheet.rowCount; /* Oh hi! */) {
+			const defenseName = sheet.getCell(row, col).stringValue
+			if (!defenseName) { row++; continue }
+
+			buildData.push({
+				name: defenseName,
+				role: sheet.getCell(row + 1, col).stringValue!,
+				tertiary: sheet.getCell(row, col + 7).formula?.slice(1).replace(/_/g, ' ') ?? null,
+				shards: [3, 4, 5].map(rowOffset => sheet.getCell(row + rowOffset, col + 4).stringValue ?? null),
+				mods: [3, 4, 5].map(rowOffset => ({
+					name: sheet.getCell(row + rowOffset, col + 1).stringValue ?? null,
+					qualibean: parseInt(sheet.getCell(row + rowOffset, col).formula!.match(/\d+/)![0])
+				})),
+				relic: sheet.getCell(row, col + 5).formula!.includes('totem') ? 'totem' : 'medallion'
+			})
+
+			row += 13
+		}
+	}
+
+	defenseBuildData = buildData
+	console.log('Defense Build Data compiled')
+}
+
+/** Loads Defense builds from DD2 Defense Build Guides */
+async function loadDefenseBuildsOld() {
+    await defenseBuildsDB.loadInfo()
+
+	const buildData: defenseObject[] = []
 	for (let i = 2; i < defenseBuildsDB.sheetCount - 2; i++) { // First and last two tabs do not contain defense build data
-		let sheet = defenseBuildsDB.sheetsByIndex[i]
+		const sheet = defenseBuildsDB.sheetsByIndex[i]
 		await sheet.loadCells()
 
-		for (let y = 2; y < sheet.rowCount; y += 20) {
-			for (let x = 1; x < sheet.columnCount; x += 5) {
-				const defenseName = sheet.getCell(y + 1, x + 2).value?.toString()
-				let   defenseRole = sheet.getCell(y + 4, x + 2).value?.toString()
+		for (let row = 2; row < sheet.rowCount; row += 20) {
+			for (let col = 1; col < sheet.columnCount; col += 5) {
+				const defenseName = sheet.getCell(row + 1, col + 2).stringValue
+				let   defenseRole = sheet.getCell(row + 4, col + 2).stringValue
 				if (!defenseName || !defenseRole) continue
 
 				const duplicateDefense = buildData.findLast(d => d.name === defenseName && String(d.role.match(/[\w\s]+/)).trim() === defenseRole)
@@ -40,16 +74,16 @@ export async function loadDefenseBuilds() {
 				buildData.push({
 					name: defenseName,
 					role: defenseRole,
-					tertiary: sheet.getCell(y + 5, x + 2).value?.toString() ?? null,
-					shards: [6, 8, 10].map(yOffset => sheet.getCell(y + yOffset, x + 2).value?.toString() ?? null),
+					tertiary: sheet.getCell(row + 5, col + 2).stringValue ?? null,
+					shards: [6, 8, 10].map(yOffset => sheet.getCell(row + yOffset, col + 2).stringValue ?? null),
 					mods: [12, 14, 16].map(yOffset => {
-						const qualibeanInfo = sheet.getCell(y + yOffset, x + 1).formula
+						const qualibeanInfo = sheet.getCell(row + yOffset, col + 1).formula
 						return ({
-							name: sheet.getCell(y + yOffset, x + 2).value?.toString() ?? null,
+							name: sheet.getCell(row + yOffset, col + 2).stringValue ?? null,
 							qualibean: qualibeanInfo ? parseInt(qualibeanInfo.match(/\d+/)![0]) : null
 						})
 					}),
-					relic: sheet.getCell(y + 12, x).formula?.startsWith('totem') ? 'totem' : 'medallion'
+					relic: sheet.getCell(row + 12, col).formula!.startsWith('totem') ? 'totem' : 'medallion'
 				})
 			}
 		}	

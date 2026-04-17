@@ -12,7 +12,7 @@ export function getShardInfo(shard: GoogleSpreadsheetRow<ShardInfo>) {
 
     const embed = new EmbedBuilder()
         .setColor('Blue')
-        .setAuthor({name: shard.get('name'), iconURL: `attachment://${difficultyIcon.name}`})
+        .setAuthor({ name: shard.get('name'), iconURL: `attachment://${difficultyIcon.name}` })
         .setThumbnail(`attachment://${shardIcon.name}`)
         .setDescription(shard.get('description'))
         .addFields([

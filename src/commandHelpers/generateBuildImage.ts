@@ -24,7 +24,7 @@ export async function generateBuildImage(defense: defenseObject) {
     ctx.fillStyle = 'white'
     canvas.wrapText(defense.name, 229, 52, 200, 27)
 
-    ctx.font = '18px Arial Bold'
+    ctx.font = '16px Arial Bold'
     ctx.fillStyle = '#E06666'
     ctx.fillText(defense.role, 229, 98)
 
@@ -75,5 +75,5 @@ export async function generateBuildImage(defense: defenseObject) {
         canvas.wrapText(mod.name, 126, yPos + 19, 200, 20)
     })
 
-    return new AttachmentBuilder(canvas.toBuffer('image/png'), {name: `${defense.name}.png`})
+    return new AttachmentBuilder(canvas.toBuffer('image/png'), { name: `${defense.name.replace(/ /g, '_')}.png` })
 }

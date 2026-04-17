@@ -24,7 +24,7 @@ const serviceAccountAuth = new JWT({
 const publicDB = new GoogleSpreadsheet('1yOjZhkn9z8dJ8HMD0YSUl7Ijgd9o1KJ62Ecf4SgyTdU', serviceAccountAuth)
 const privateDB = new GoogleSpreadsheet(process.env.PRIVATE_DB_ID!, serviceAccountAuth)
 const DOEBackerDB = new GoogleSpreadsheet(process.env.DOE_BACKER_DB_ID!, serviceAccountAuth)
-export const defenseBuildsDB = new GoogleSpreadsheet('1sjBA60Fr9ryVnw4FUIMU2AVXbKw395Tdz7j--EAUA1A', serviceAccountAuth)
+export const defenseBuildsDB = new GoogleSpreadsheet('1Grd0H2iaNy1I-CPDKjE1uo5_qHNCf9WyQlnEB4u-yOg', serviceAccountAuth)
 
 export async function connectDatabase() {
     await Promise.all([
