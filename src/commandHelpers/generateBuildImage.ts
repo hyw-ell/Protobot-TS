@@ -6,12 +6,12 @@ import { EnhancedCanvas } from '../classes/EnhancedCanvas.js'
 import path from 'path'
 
 export async function generateBuildImage(defense: defenseObject) {
-    const canvas = new EnhancedCanvas(326, 378)
+    const canvas = new EnhancedCanvas(350, 380)
     const ctx = canvas.ctx
     
     /* Draw the black background */
     ctx.fillStyle = 'black'
-    ctx.fillRect(0, 0, 326, 378)
+    ctx.fillRect(0, 0, 350, 380)
 
     /* Draw the Defense Image */
     const defenseInfo = database.defenses.find(d => d.get('name') === defense.name)
@@ -22,16 +22,16 @@ export async function generateBuildImage(defense: defenseObject) {
     ctx.textAlign = 'center'
     ctx.font = '27px Arial Bold'
     ctx.fillStyle = 'white'
-    canvas.wrapText(defense.name, 229, 52, 200, 27)
+    canvas.wrapText(defense.name, 238, 50, 220, 27, true)
 
     ctx.font = '16px Arial Bold'
     ctx.fillStyle = '#E06666'
-    ctx.fillText(defense.role, 229, 98)
+    ctx.fillText(defense.role, 238, 95)
 
     if (defense.tertiary) {
         ctx.font = '16px Arial Bold'
         ctx.fillStyle = '#00FFFF'
-        ctx.fillText(defense.tertiary, 229, 118)
+        ctx.fillText(defense.tertiary, 238, 115)
     }
 
     /* Draw the horizontal grey line */
@@ -39,14 +39,14 @@ export async function generateBuildImage(defense: defenseObject) {
     ctx.strokeStyle = '#434343'
     ctx.beginPath()
     ctx.moveTo(0, 124)
-    ctx.lineTo(326, 125)
+    ctx.lineTo(350, 125)
     ctx.stroke()
 
     /* Draw the Shard and Relic Icons */
     const shardIcon = images['Green_Shard_Icon.png']
     const relicIcon = images[defense.relic === 'medallion' ? 'Medallion_Icon.png' : 'Totem_Icon.png']
-    ctx.drawImage(shardIcon, 13, 170)
-    ctx.drawImage(relicIcon, 9, 293, 45, 45)
+    ctx.drawImage(shardIcon, 30, 170)
+    ctx.drawImage(relicIcon, 25, 293, 45, 45)
 
     /* Prepare styles for shards and mods */
     ctx.textAlign = 'left'
@@ -61,8 +61,8 @@ export async function generateBuildImage(defense: defenseObject) {
 
         const yPos = 132 + index * 42
         const shardDifficultyIcon = images[path.basename(shard.get('dropURL'))]
-        ctx.drawImage(shardDifficultyIcon, 80, yPos, 31, 31)
-        canvas.wrapText(shardName, 126, yPos + 15, 200, 20)
+        ctx.drawImage(shardDifficultyIcon, 90, yPos, 31, 31)
+        canvas.wrapText(shardName, 130, yPos + 15, 220, 20, true)
     })
 
     /* Draw the Mods and Qualibean Icons */
@@ -71,8 +71,8 @@ export async function generateBuildImage(defense: defenseObject) {
 
         const qualibeanIcon = images[mod.qualibean ? `Qualibean_${mod.qualibean}.png` : 'Unknown_Icon.png']
         const yPos = 254 + index * 42
-        ctx.drawImage(qualibeanIcon, 82, yPos, 25, 37)
-        canvas.wrapText(mod.name, 126, yPos + 19, 200, 20)
+        ctx.drawImage(qualibeanIcon, 93, yPos, 25, 37)
+        canvas.wrapText(mod.name, 130, yPos + 19, 220, 20, true)
     })
 
     return new AttachmentBuilder(canvas.toBuffer('image/png'), { name: `${defense.name.replace(/ /g, '_')}.png` })
