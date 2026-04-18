@@ -20,30 +20,38 @@ export class EnhancedCanvas extends Canvas {
      * @param y - The Y coordinate of the text
      * @param maxWidth - The width of the line of text. After reaching this width limit the text will wrap around
      * @param lineHeight - The spacing between lines of text (generally, this should be the same number as the font size)
+     * @param centerVertical - Whether or not to center the text vertically at the specified y-position
      */
-    wrapText(text: string, x: number, y: number, maxWidth: number, lineHeight: number) {
+    wrapText(text: string, x: number, y: number, maxWidth: number, lineHeight: number, centerVertical = false) {
         const ctx = this.ctx
         const words = text.split(' ')
-        let line = ''
+        const linesToDraw: string[] = []
+        let testWords: string[] = []
         
         ctx.save()
         ctx.textBaseline = 'middle'
         
-        for (let n = 0; n < words.length; n++) {
-            const testLine = line + words[n] + ' '
-            const metrics = ctx.measureText(testLine)
-            const testWidth = metrics.width
-            if (testWidth > maxWidth && n > 0) {
-                y -= (ctx.measureText(text).actualBoundingBoxAscent + ctx.measureText(text).actualBoundingBoxDescent) / 2
-                ctx.fillText(line, x, y)
-                line = words[n] + ' '
-                y += lineHeight
+        for (const word of words) {
+            const testLine = [...testWords, word].join(' ')
+            if (ctx.measureText(testLine).width > maxWidth && testWords.length > 0) {
+                linesToDraw.push(testWords.join(' '))
+                testWords = [word]
             } else {
-                line = testLine
+                testWords.push(word)
             }
         }
+        linesToDraw.push(testWords.join(' '))
 
-        ctx.fillText(line, x, y)
+        if (centerVertical) {
+            const totalHeight = linesToDraw.length * lineHeight
+            y -= (totalHeight - lineHeight) / 2
+        }
+
+        for (const line of linesToDraw) {
+            ctx.fillText(line, x, y)
+            y += lineHeight
+        }
+
         ctx.restore()
     }
 }
