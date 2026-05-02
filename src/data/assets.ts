@@ -1,23 +1,18 @@
 import { loadImage } from 'canvas'
-import { AttachmentBuilder } from 'discord.js'
 import { getAllFilePaths } from '../utils/filesystem.js'
 import path from 'path'
 
-const pngFilePaths = getAllFilePaths('./assets', 'png')
-
-const attachmentFilePaths = pngFilePaths.filter(f => /Misc_Icons|Infographics|Difficulty_Icons|Shard_Icons/.test(f))
-const imageFilePaths = pngFilePaths.filter(f => /Misc_Icons|Defense_Icons|Difficulty_Icons/.test(f))
-
+const imageFilePaths = getAllFilePaths('./assets', 'png')
 const imagePromises = imageFilePaths.map(f => loadImage(f))
 const resolvedImages = await Promise.all(imagePromises)
 
-export const attachments = Object.fromEntries(
-    attachmentFilePaths.map(filePath => {
-        const fileName = path.basename(filePath)
-        return [fileName, new AttachmentBuilder(filePath, { name: fileName })]
-    })
+export const images = Object.fromEntries(
+    imageFilePaths
+        .filter(f => /Misc_Icons|Defense_Icons|Difficulty_Icons/.test(f))
+        .map((filePath, index) => [path.basename(filePath), resolvedImages[index]])
 )
 
-export const images = Object.fromEntries(
-    imageFilePaths.map((filePath, index) => [path.basename(filePath), resolvedImages[index]])
+const BASE_URL = 'https://raw.githubusercontent.com/hyw-ell/Protobot-TS/refs/heads/main/'
+export const IMAGE_URLS = Object.fromEntries(
+    imageFilePaths.map(filePath => [path.basename(filePath), BASE_URL + filePath.match(/assets.+/)])
 )

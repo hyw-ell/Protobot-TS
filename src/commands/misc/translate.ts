@@ -2,6 +2,7 @@ import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder } from '
 import { languageCodes } from '../../data/languageCodes.js'
 import { findBestCIMatch } from '../../utils/string.js'
 import { Translate } from '@google-cloud/translate/build/src/v2/index.js'
+import { IMAGE_URLS } from '../../data/assets.js'
 
 export const command = {
 	data: new SlashCommandBuilder()
@@ -54,7 +55,7 @@ export const command = {
 				{ name: `Input (${sourceLang?.name ?? detectedSourceLang})`, value: textInput },
 				{ name: `Output (${outputLang.name})`, value: translation.translatedText }
 			])
-			.setFooter({ text: 'Google Translate', iconURL: 'https://i.imgur.com/vcZDlz7.png' })
+			.setFooter({ text: 'Google Translate', iconURL: IMAGE_URLS['Google_Translate_Icon.png'] })
 		
 		interaction.editReply({ embeds: [translateEmbed] })
 	}

@@ -3,6 +3,7 @@ import { schedule } from 'node-cron'
 import { database } from '../database/database.js'
 import { sendToChannel } from '../utils/discord.js'
 import { getTwitchStreamInfo, getTwitchUserInfo } from '../utils/twitch.js'
+import { IMAGE_URLS } from '../data/assets.js'
 
 // Twitch Live Notifications
 export interface channelConfig {id: string, message: string | undefined, categories: string[]}
@@ -22,7 +23,7 @@ schedule('* * * * *', () => {
         if (recentStreamIDs.includes(streamInfo.id)) return
 
         const twitchStreamEmbed = new EmbedBuilder()
-            .setAuthor({name: 'Twitch', iconURL: 'https://cdn.icon-icons.com/icons2/3041/PNG/512/twitch_logo_icon_189242.png'})
+            .setAuthor({name: 'Twitch', iconURL: IMAGE_URLS['Twitch_Logo.png']})
             .setTitle(`${streamInfo.user_name} is now playing ${streamInfo.game_name}!`)
             .setURL(`https://www.twitch.tv/${channel.get('username')}`)
             .setDescription(streamInfo.title)

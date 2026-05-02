@@ -1,5 +1,6 @@
 import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder } from 'discord.js'
 import { formatList } from '../../utils/string.js'
+import { IMAGE_URLS } from '../../data/assets.js'
 
 export const command = {
 	data: new SlashCommandBuilder()
@@ -13,7 +14,7 @@ export const command = {
 		const rand = Math.floor(Math.random() * Math.floor(choices?.length!))
 
 		const choiceEmbed = new EmbedBuilder()
-			.setAuthor({iconURL: 'https://i.imgur.com/63S2bZB.png', name: 'Choices: ' + formatList(choices)})
+			.setAuthor({ iconURL: IMAGE_URLS['ABCD.png'], name: 'Choices: ' + formatList(choices) })
 			.setDescription(`<@${interaction.user.id}>, I choose **${String(choices[rand])}**`)
 			.setColor('Blue')
 		interaction.reply({embeds: [choiceEmbed]})

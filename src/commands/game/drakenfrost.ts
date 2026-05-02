@@ -1,7 +1,7 @@
 import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder } from 'discord.js'
 import { dateDiff } from '../../utils/time.js'
 import { MILLISECONDS } from '../../data/time.js'
-import { attachments } from '../../data/assets.js'
+import { IMAGE_URLS } from '../../data/assets.js'
 
 export const command = {
 	data: new SlashCommandBuilder()
@@ -27,20 +27,19 @@ export const command = {
 		nextDate.setMinutes(nextDate.getMinutes() - nextDate.getTimezoneOffset()) // Convert back to local time
 		
 		const weekNum = Math.floor((now.getTime() - TIMESTAMP) / MILLISECONDS.WEEK % 4)
-		const drakenfrostDDLogo = attachments['Drakenfrost_DD_Logo.png']
+		const infographics = [
+			IMAGE_URLS['Torchbearer_Week.png'],
+			IMAGE_URLS['Frozen_Path_Week.png'],
+			IMAGE_URLS['Frostfire_Remnants_Week.png'],
+			IMAGE_URLS['Drakenlords_Soul_Week.png'],
+		]
 		const DFKModNames = ['Torchbearer', 'Frozen Path', 'Frostfire Remnants', 'Drakenlord\'s Soul']
 			.map((modName, i) => i === weekNum ? `**${modName}**` : modName)
-		const infographics = [
-			attachments['Torchbearer_Week.png'],
-			attachments['Frozen_Path_Week.png'],
-			attachments['Frostfire_Remnants_Week.png'],
-			attachments['Drakenlords_Soul_Week.png'],
-		]
 
 		const DFKEmbed = new EmbedBuilder()
 			.setColor('Blue')
 			.setTitle('__**Time until next rotation:**__')
-			.setThumbnail(`attachment://${drakenfrostDDLogo.name}`)
+			.setThumbnail(IMAGE_URLS['Drakenfrost_DD_Logo.png'])
 			.addFields([
 				{
 					name: `\u200B    ${days}           ${hours}            ${minutes}             ${seconds}`,
@@ -54,11 +53,8 @@ export const command = {
 				{ name: '\u200b', value: `\u200b\n\u200b`, inline: true },
 				{ name: '**Next Rotation At**:', value: `<t:${nextDate.getTime()/1000}:F>`}
 			])
-			.setImage(`attachment://${infographics[weekNum].name}`)
+			.setImage(infographics[weekNum])
 
-		interaction.reply({
-			embeds: [DFKEmbed],
-			files: [drakenfrostDDLogo, infographics[weekNum]]
-		})
+		interaction.reply({ embeds: [DFKEmbed] })
 	}
 }

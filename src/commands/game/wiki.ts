@@ -1,6 +1,7 @@
 import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder } from 'discord.js'
 import axios from 'axios'
 import { parse } from 'node-html-parser'
+import { IMAGE_URLS } from '../../data/assets.js'
 
 export const command = {
 	data: new SlashCommandBuilder()
@@ -26,12 +27,12 @@ export const command = {
 		else if (/(Ability|Defense) Statistics/.test(data)) description = document.querySelector('#mw-content-text > table.floatright > tr:nth-child(3) > td')!.textContent.trim()
 
 		const wikiEmbed = new EmbedBuilder()
-			.setAuthor({name: 'Dungeon Defenders 2 Wiki', iconURL: 'https://i.imgur.com/ebPXRqR.png'})
+			.setAuthor({ name: 'Dungeon Defenders 2 Wiki', iconURL: IMAGE_URLS['Huntress_Icon.png'] })
 			.setTitle(title)
 			.setURL(`https://wiki.dungeondefenders2.com${url}`)
 			.setDescription(description.length > 350 ? `${description.substring(0, 350)}...` : description)
 			.setImage(imgURL.includes('mediawiki') ? null : `https://wiki.dungeondefenders2.com${imgURL}`)
-			.setThumbnail('https://wiki.dungeondefenders2.com/resources/assets/dd2_logo2.png?b4db7')
+			.setThumbnail(IMAGE_URLS['DD2_Logo.png'])
 			.setColor('Blue')
 
 		await interaction.reply({embeds: [wikiEmbed]})

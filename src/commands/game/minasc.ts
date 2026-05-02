@@ -32,22 +32,21 @@ export const command = {
 		const utility = Math.floor(talentCaps)
 
 		const suggestion = minAsc < 500
-		? 'Your Minimum Ascension is far too low. If you reset right now, you will most likely not be able to get back to where you were or do many resets very easily.'
+			? 'Your Minimum Ascension is far too low. If you reset right now, you will most likely not be able to get back to where you were or do many resets very easily.'
 		: 500 <= minAsc && minAsc < 1000
-		? "You're making progress towards resetting, but you should still continue to push higher in Onslaught before doing so."
+			? "You're making progress towards resetting, but you should still continue to push higher in Onslaught before doing so."
 		: 1000 <= minAsc && minAsc < 1500
-		? 'You might have enough Minimum Ascension for your next reset now, but you should probably go even further still.'
+			? 'You might have enough Minimum Ascension for your next reset now, but you should probably go even further still.'
 		: 1500 <= minAsc && minAsc < 3000
-		? "You have a good amount of Minimum Ascension now! If you want to reset now, I won't stop you, but you may want to consider pushing for 3000 Minimum Ascension."
+			? "You have a good amount of Minimum Ascension now! If you want to reset now, I won't stop you, but you may want to consider pushing for 3000 Minimum Ascension."
 		: minAsc > 3000
-		? 'What are you waiting for? You have more than enough Minimum Ascension for your next reset!'
+			? 'What are you waiting for? You have more than enough Minimum Ascension for your next reset!'
 		: 'Hmm, it seems that your input is invalid, so I cannot provide a proper suggestion...'
 		
-		const { avatar, id, username } = interaction.user
 		const ascEmbed = new EmbedBuilder()
 			.setColor('Blue')
-			.setAuthor({ name: username })
-			.setThumbnail(`https://cdn.discordapp.com/avatars/${id}/${avatar}.png`)
+			.setAuthor({ name: interaction.user.username })
+			.setThumbnail(interaction.user.displayAvatarURL({ forceStatic: true, extension: 'png' }))
 			.addFields([
 				{ name: '**Ascension:**',   value: `${ascension}`, 				  inline: true },
 				{ name: '**Floor:**', 	    value: `${floor}`,	 				  inline: true },
@@ -56,7 +55,7 @@ export const command = {
 					name: '**Minimum Ascension:**',
 					value: `\`\`\`${minAsc} (${offense} Offense | ${defense} Defense | ${utility} Utility)\`\`\``
 				},
-				{ name: '<:protobot:563244237433602048> My suggestion:', value: suggestion},
+				{ name: '<:protobot:563244237433602048> My suggestion:', value: suggestion },
 				{
 					name: '\u200b',
 					value: '[Click Here](https://wiki.dungeondefenders2.com/wiki/Ancient_Power_Calculations) to learn more about how this was calculated'
