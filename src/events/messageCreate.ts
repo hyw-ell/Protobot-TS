@@ -52,6 +52,10 @@ export async function onMessageCreate(message: OmitPartialGroupDMChannel<Message
         }
     }
 
+    if (message.channelId === CHANNEL_IDS.DD_ANNOUNCEMENTS) {
+        message.forward(CHANNEL_IDS.JN_DD_NEWS)
+    }
+
     // if (message.guildId === DD_SERVER_ID) {
     //     recentMessages.push(message)
     //     if (recentMessages.length > 25) recentMessages = recentMessages.splice(5)
