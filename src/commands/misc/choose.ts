@@ -11,7 +11,7 @@ export const command = {
 	async execute(interaction: ChatInputCommandInteraction) {
 		const userInput = interaction.options.getString('choices')!
 		const choices = userInput.split(',').map(choice => choice.trim())! // Parse the list of choices provided by the user
-		const rand = Math.floor(Math.random() * Math.floor(choices?.length!))
+		const rand = Math.floor(Math.random() * choices?.length!)
 
 		const choiceEmbed = new EmbedBuilder()
 			.setAuthor({ iconURL: IMAGE_URLS['ABCD.png'], name: 'Choices: ' + formatList(choices) })

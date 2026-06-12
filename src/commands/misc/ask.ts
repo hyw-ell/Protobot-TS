@@ -13,7 +13,7 @@ export const command = {
 		const yesAnswers = ['Yes', 'Without a doubt', 'Yes, definitely', 'Most Likely', 'Signs point to yes', 'Certainly', 'As I see it, yes']
 		const noAnswers = ['No', 'Definitely not', 'Probably', 'Signs point to no', 'As I see it, no']
 		const answers = [...yesAnswers, ...noAnswers]
-		const rand = Math.floor(Math.random() * Math.floor(answers.length))
+		const rand = Math.floor(Math.random() * answers.length)
 
 		const answerEmbed = new EmbedBuilder()
 			.setAuthor({
