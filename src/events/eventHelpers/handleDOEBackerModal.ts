@@ -58,6 +58,6 @@ export async function handleDOEBackerModal(interaction: ModalSubmitInteraction<C
             components: [new ActionRowBuilder<ButtonBuilder>().addComponents(approveButton, denyButton)]
         })
 
-        interaction.reply('Your email has been submitted. Please wait for staff to manually verify your backer status. Status updates will be sent to you via DM.')
+        interaction.reply('Your email has been submitted. Please wait for staff to manually verify your backer status. Status updates will be sent to you via Direct Message. You must have Direct Messages open to receive status updates.')
     }
 }
