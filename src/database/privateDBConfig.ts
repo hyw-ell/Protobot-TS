@@ -25,7 +25,7 @@ export const privateDatabaseConfig = {
 } as const
 
 // ============================ DOE Backer Database ============================
-type BackerKeys = 'email' | 'discord_username' | 'discord_ID' | 'role_claimed_at' | 'email_claim_by'
+type BackerKeys = 'backer_number' | 'email' | 'discord_username' | 'discord_ID' | 'role_claimed_at'
 type BackerInfo = { [K in BackerKeys]: string }
 
 export const DOEBackerDatabaseConfig = {

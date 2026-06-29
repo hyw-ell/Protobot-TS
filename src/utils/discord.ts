@@ -35,6 +35,7 @@ export async function registerCommands() {
     rest.put(Routes.applicationCommands(BOT_ID), { body: commands })
     rest.put(Routes.applicationGuildCommands(BOT_ID, HOME_SERVER_ID), { body: privateCommands })
     rest.put(Routes.applicationGuildCommands(BOT_ID, DD_SERVER_ID), { body: DDServerCommands })
+	console.log('Commands Registered')
 }
 
 export async function sendToChannel(channelID: string, message: string | MessagePayload | MessageCreateOptions) {

@@ -8,7 +8,7 @@ export async function onGuildMemberAdd(member: GuildMember) {
     if (member.guild.id === DD_SERVER_ID) {
         const backer = database.DOEBackers.find(b => {
             const username = b.get('discord_username')
-            return (username === member.user.username) || (username === member.id)
+            return (username === member.user.username) || (username === member.id) || (b.get('discord_ID') === member.id)
         })
     
         if (backer) {
@@ -20,7 +20,7 @@ export async function onGuildMemberAdd(member: GuildMember) {
                 return undefined
             })
             
-            if (result) {
+            if (result && !backer.get('role_claimed_at')) {
                 const timestamp = new Date().toUTCString()
                 backer.set('discord_ID', member.id)
                 backer.set('role_claimed_at', timestamp)
