@@ -31,7 +31,7 @@ const backerNumber = new LabelBuilder()
 
 export const DOEBackerModal = new ModalBuilder()
     .setCustomId('DOEBackerModal')
-    .setTitle('DOE Backer Manual Verification')
+    .setTitle('DOE Backer Verification')
     .addTextDisplayComponents(new TextDisplayBuilder({ content: instructions }))
     .addLabelComponents(emailInput, backerNumber)
     
