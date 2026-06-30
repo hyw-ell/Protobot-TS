@@ -5,9 +5,9 @@ import { sendToChannel } from '../../utils/discord.js'
 import { inspect } from 'util'
 
 export async function handleDOEBackerModal(interaction: ModalSubmitInteraction<CacheType>) {
-    const email = interaction.fields.getTextInputValue('backerEmail')
+    const email = interaction.fields.getTextInputValue('backerEmail').toLowerCase()
     const backerNumber = interaction.fields.getTextInputValue('backerNumber')
-    const backer = database.DOEBackers.find(backer => backer.get('email') === email)
+    const backer = database.DOEBackers.find(backer => backer.get('email').toLowerCase() === email)
 
     if (!backer) {
         interaction.reply({
