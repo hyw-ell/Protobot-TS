@@ -9,49 +9,42 @@ export const command = {
 		.setDescription('Show what items are available from Elemental Rumble this week')
 	,
 	async execute(interaction: ChatInputCommandInteraction) {
-		// Rumble rotation changes on Wednesday at 0:00 (UTC)
+		// TODO Unsure of rotation schedule just yet; week number will be hard coded for now and fixed later
+		// Rumble rotation changes every 5 days at 0:00 (UTC)
 		const TIMESTAMP = 1756857600000 // September 3rd, 2025, 0:00 UTC, used as a reference to calculate week number
 		const now = new Date()
 		now.setMinutes(now.getMinutes() + now.getTimezoneOffset()) // Ensure that UTC is being used
 		
-		const nextDate = new Date( // Gets the next Wednesday at 0:00 (UTC)
-			now.getUTCFullYear(),
-			now.getUTCMonth(),
-			now.getUTCDate() + (10 - now.getUTCDay()) % 7,
-			0, 0, 0, 0
-		)
-		if (nextDate <= now) nextDate.setDate(nextDate.getDate() + 7)
-		
+		const nextDate = new Date(TIMESTAMP)
+		while (nextDate <= now) { nextDate.setDate(nextDate.getDate() + 5) }
 		const { days, hours, minutes, seconds } = dateDiff(nextDate, now)
 		
 		nextDate.setMinutes(nextDate.getMinutes() - nextDate.getTimezoneOffset()) // Convert back to local time
 
-		const weekNum = Math.floor((now.getTime() - TIMESTAMP) / MILLISECONDS.WEEK % 4)
-		const weekNames = ['Fire', 'Water', 'Storm', 'Earth'].map((w, i) => i === weekNum ? `**${w}**` : w)
-		const rumbleIconURLs = [
-			IMAGE_URLS['Fire_Week_Rumble_Icon.png'],
-			IMAGE_URLS['Water_Week_Rumble_Icon.png'],
-			IMAGE_URLS['Storm_Week_Rumble_Icon.png'],
-			IMAGE_URLS['Earth_Week_Rumble_Icon.png'],
-		]
-		const infographics = [
-			IMAGE_URLS['Fire_Week_Items.png'],
-			IMAGE_URLS['Water_Week_Items.png'],
-			IMAGE_URLS['Storm_Week_Items.png'],
-			IMAGE_URLS['Earth_Week_Items.png'],
-		]
+		// const weekNum = Math.floor((now.getTime() - TIMESTAMP) / (MILLISECONDS.DAY * 5) % 6)
+		const weekNum = 4
+		const rotation = ['Fire', 'Water', 'Storm', 'Earth', 'Poison', 'Gold'] // TODO this is a guess, correct later if needed
+		const weekNames = rotation.map((r, i) => i === weekNum ? `**${r}**` : r)
+		const rumbleIcons = rotation.map(r => IMAGE_URLS[`Rumble_Icon_${r}.png`])
+		const infographics = rotation.map(r => IMAGE_URLS[`Rumble_Items_${r}.png`])
 	
 		const rumbleEmbed = new EmbedBuilder()
 			.setColor('Blue')
 			.setTitle('__**Time until next rotation:**__')
-			.setThumbnail(rumbleIconURLs[weekNum])
+			.setThumbnail(rumbleIcons[weekNum])
 			.addFields([
+				// {
+				// 	name: `\u200B    ${days}           ${hours}            ${minutes}             ${seconds}`,
+				// 	value: 'Days \u2009 Hours \u2009 Minutes \u2009 Seconds\n\u200b'
+				// },
+				// { name: 'Weekly Rotation', value: weekNames.join(' -> ') + '\n\u200b' },
+				// { name: '**Next Rotation At**:', value: `<t:${nextDate.getTime()/1000}:F>`}
 				{
-					name: `\u200B    ${days}           ${hours}            ${minutes}             ${seconds}`,
+					name: `\u200B    ?           ?             ?              ?`,
 					value: 'Days \u2009 Hours \u2009 Minutes \u2009 Seconds\n\u200b'
 				},
 				{ name: 'Weekly Rotation', value: weekNames.join(' -> ') + '\n\u200b' },
-				{ name: '**Next Rotation At**:', value: `<t:${nextDate.getTime()/1000}:F>`}
+				{ name: '**Next Rotation At**:', value: `?`}
 			])
 			.setImage(infographics[weekNum])
 			.setFooter({ 
