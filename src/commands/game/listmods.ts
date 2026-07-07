@@ -7,9 +7,9 @@ import { ModInfo } from '../../database/publicDBConfig.js'
 export const command = {
 	data: new SlashCommandBuilder()
 		.setName('listmods')
-		.setDescription('List all mods equippable on a given slot for a given hero from a given difficulty')
-		.addStringOption(option => option.setName('difficulty')
-			.setDescription('The difficulty to filter the list by')
+		.setDescription('Generate a filtered list of mods based on acquisition, hero, and slot')
+		.addStringOption(option => option.setName('obtain')
+			.setDescription('The method of acquisition to filter the list by')
 			.setAutocomplete(true)
 		)
 		.addStringOption(option => option.setName('hero')
@@ -29,34 +29,34 @@ export const command = {
 		.addStringOption(option => option.setName('custom-filter').setDescription('Custom keyword or keyphrase to filter the list by'))
 	,
 	async execute(interaction: ChatInputCommandInteraction) {
-		const difficulty = interaction.options.getString('difficulty')
+		const obtain = interaction.options.getString('obtain')
 		const hero = interaction.options.getString('hero')
 		const slot = interaction.options.getString('slot')
 		const customFilter = interaction.options.getString('custom-filter')
 
-		if (!difficulty && !hero && !slot && !customFilter) {
+		if (!obtain && !hero && !slot && !customFilter) {
 			await interaction.reply('You must supply at least one parameter!')
 			return
 		}
 
-		function inDifficultyRange(difficulty: string, mod: GoogleSpreadsheetRow<ModInfo>) {
-			if (mod.get('drop').includes(difficulty)) return true
+		function inDifficultyRange(obtain: string, mod: GoogleSpreadsheetRow<ModInfo>) {
+			if (mod.get('obtain').includes(obtain)) return true
 
-			const [ low, high ] = mod.get('drop')
+			const [ low, high ] = mod.get('obtain')
 				.replace(/Campaign/i, 'Chaos 0')
 				.split('-')
 				.map((v: string) => parseInt(String(v.match(/(?<=Chaos )\d+/))))
-			const difficultyNum = parseInt(String(difficulty.match(/\d+/)))
-			return difficultyNum >= low && difficultyNum <= high
+			const chaosNum = parseInt(String(obtain.match(/\d+/)))
+			return chaosNum >= low && chaosNum <= high
 		}
 
 		const modlist = database.mods.filter(mod => {
-			const diffMatch = difficulty ? inDifficultyRange(difficulty, mod) : true
+			const obtainMatch = obtain ? inDifficultyRange(obtain, mod) : true
 			const heroMatch = hero ? mod.get('hero').includes(hero) : true
 			const slotMatch = slot ? mod.get('type').includes(slot) : true
 			const customMatch = customFilter ? mod.get('description').toLowerCase().includes(customFilter.toLowerCase()) : true
 
-			return diffMatch && heroMatch && slotMatch && customMatch
+			return obtainMatch && heroMatch && slotMatch && customMatch
 		}).map(shard => shard.get('name'))
 
 		if (modlist.length > 50) {
@@ -69,7 +69,7 @@ export const command = {
 			.setDescription(`**Custom Filters**: ${customFilter ? capitalize(customFilter) : 'N/A'}`)
 			.addFields(
 				{ name: 'Heroes', 		value: hero ?? 'Any', 		inline: true },
-				{ name: 'Difficulty', 	value: difficulty ?? 'Any', inline: true },
+				{ name: 'Obtain', 		value: obtain ?? 'Any',		inline: true },
 				{ name: 'Slot', 		value: slot ?? 'Any', 		inline: true },
 				{ name: 'Mods', 		value: '```' + modlist.join(', ') + '```' }
 			)

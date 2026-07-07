@@ -49,12 +49,12 @@ export async function onInteractionCreate(interaction: Interaction<CacheType>) {
                 allChoices = database.mods.map(m => m.get('name'))
                 break
             case 'listshards':
-                if (focusedOption.name !== 'difficulty') return
-                allChoices = database.shards.map(m => m.get('drop'))
+                if (focusedOption.name !== 'obtain') return
+                allChoices = database.shards.map(m => m.get('obtain'))
                 break
             case 'listmods':
-                if (focusedOption.name !== 'difficulty') return
-                allChoices = database.mods.map(m => m.get('drop'))
+                if (focusedOption.name !== 'obtain') return
+                allChoices = database.mods.map(m => m.get('obtain'))
                 break
             case 'defense':
                 allChoices = database.defenses.map(d => d.get('name'))

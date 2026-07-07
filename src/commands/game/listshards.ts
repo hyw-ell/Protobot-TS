@@ -5,9 +5,9 @@ import { capitalize } from '../../utils/string.js'
 export const command = {
 	data: new SlashCommandBuilder()
 		.setName('listshards')
-		.setDescription('List all shards equippable on a given slot for a given hero from a given difficulty')
-		.addStringOption(option => option.setName('difficulty')
-			.setDescription('The difficulty to filter the list by')
+		.setDescription('Generate a filtered list of shards based on acquisition, hero, and slot')
+		.addStringOption(option => option.setName('obtain')
+			.setDescription('The method of acquisition to filter the list by')
 			.setAutocomplete(true)
 		)
 		.addStringOption(option => option.setName('hero')
@@ -28,24 +28,24 @@ export const command = {
 		.addStringOption(option => option.setName('custom-filter').setDescription('Custom keyword or keyphrase to filter the list by'))
 	,
 	async execute(interaction: ChatInputCommandInteraction) {
-		const difficulty = interaction.options.getString('difficulty')
+		const obtain = interaction.options.getString('obtain')
 		const hero = interaction.options.getString('hero')
 		const slot = interaction.options.getString('slot')
 		const customFilter = interaction.options.getString('custom-filter')
 
-		if (!difficulty && !hero && !slot && !customFilter) {
+		if (!obtain && !hero && !slot && !customFilter) {
 			await interaction.reply('You must supply at least one parameter!')
 			return
 		}
 
 		const shardlist = database.shards.filter(shard => {
-			const diffMatch = difficulty ? shard.get('drop').includes(difficulty) : true
+			const obtainMatch = obtain ? shard.get('obtain').includes(obtain) : true
 			const heroMatch = hero ? shard.get('hero').includes(hero) : true
 			const slotMatch = slot ? shard.get('type').includes(slot) : true
 			const customMatch = customFilter ? shard.get('description').toLowerCase().includes(customFilter.toLowerCase()) : true
 			const removedShard = shard.get('name').includes('(removed)')
 
-			return diffMatch && heroMatch && slotMatch && customMatch && !removedShard
+			return obtainMatch && heroMatch && slotMatch && customMatch && !removedShard
 		}).map(shard => shard.get('name'))
 		
 		if (shardlist.length > 50) {
@@ -58,7 +58,7 @@ export const command = {
 			.setDescription(`**Custom Filters**: ${customFilter ? capitalize(customFilter) : 'N/A'}`)
 			.addFields(
 				{ name: 'Heroes', 		value: hero ?? 'Any', 		inline: true },
-				{ name: 'Difficulty', 	value: difficulty ?? 'Any', inline: true },
+				{ name: 'Obtain',	 	value: obtain ?? 'Any', 	inline: true },
 				{ name: 'Slot', 		value: slot ?? 'Any', 		inline: true },
 				{ name: 'Shards', 		value: '```' + shardlist.join(', ') + '```' }
 			)

@@ -7,8 +7,8 @@ import { database } from '../database/database.js'
 import path from 'path'
 
 export function getShardInfo(shard: GoogleSpreadsheetRow<ShardInfo>) {
-    const difficultyIconURL = IMAGE_URLS[path.basename(shard.get('dropURL'))]
-    const shardIconURL = IMAGE_URLS[path.basename(shard.get('image'))]
+    const difficultyIconURL = IMAGE_URLS[path.basename(shard.get('obtain_icon_URL'))]
+    const shardIconURL = IMAGE_URLS[path.basename(shard.get('icon_URL'))]
 
     const embed = new EmbedBuilder()
         .setColor('Blue')
@@ -24,21 +24,21 @@ export function getShardInfo(shard: GoogleSpreadsheetRow<ShardInfo>) {
             }
         ])
         .setFooter({
-            text: `Upgrade Levels: ${shard.get('upgradeLevels')} | ${shard.get('type')} | ${shard.get('drop')}`
+            text: `Upgrade Levels: ${shard.get('num_upgrades')} | ${shard.get('type')} | ${shard.get('obtain')}`
         })
 
     return { embeds: [embed] }
 }
 
 export function getModInfo(mod: GoogleSpreadsheetRow<ModInfo>) {
-    const modTypeIconURL = IMAGE_URLS[path.basename(mod.get('image'))]
+    const modTypeIconURL = IMAGE_URLS[path.basename(mod.get('icon_URL'))]
     const embed = new EmbedBuilder()
         .setColor('Blue')
         .setAuthor({ name: mod.get('name') })
         .setThumbnail(modTypeIconURL)
         .setDescription(mod.get('description'))
         .addFields([
-            { name: 'Acquisition:', value: mod.get('drop') },
+            { name: 'Acquisition:', value: mod.get('obtain') },
             {
                 name: 'Usable by:',
                 value: mod.get('hero').split(', ').map((hero: string) => heroEmotes[hero]).join(''),

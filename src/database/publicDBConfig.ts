@@ -1,7 +1,7 @@
-type ModKeys = 'name' | 'description' | 'drop' | 'hero' | 'type' | 'image'
+type ModKeys = 'name' | 'description' | 'obtain' | 'hero' | 'type' | 'icon_URL'
 export type ModInfo = { [K in ModKeys]: string }
 
-type ShardKeys = ModKeys | 'upgradeLevels' | 'dropURL' | 'gilded'
+type ShardKeys = ModKeys | 'num_upgrades' | 'obtain_icon_URL' | 'gilded'
 export type ShardInfo = { [K in ShardKeys]: string }
 
 export type rarityName = 'Legendary' | 'Mythical' | 'Epic' | 'Powerful'

@@ -60,7 +60,7 @@ export async function generateBuildImage(defense: defenseObject) {
         if (!shardName || !shard) return
 
         const yPos = 132 + index * 42
-        const shardDifficultyIcon = images[path.basename(shard.get('dropURL'))]
+        const shardDifficultyIcon = images[path.basename(shard.get('obtain_icon_URL'))]
         ctx.drawImage(shardDifficultyIcon, 90, yPos, 31, 31)
         canvas.wrapText(shardName, 130, yPos + 15, 220, 20, true)
     })
