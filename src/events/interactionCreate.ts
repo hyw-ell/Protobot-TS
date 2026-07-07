@@ -48,6 +48,14 @@ export async function onInteractionCreate(interaction: Interaction<CacheType>) {
             case 'mod':
                 allChoices = database.mods.map(m => m.get('name'))
                 break
+            case 'listshards':
+                if (focusedOption.name !== 'difficulty') return
+                allChoices = database.shards.map(m => m.get('drop'))
+                break
+            case 'listmods':
+                if (focusedOption.name !== 'difficulty') return
+                allChoices = database.mods.map(m => m.get('drop'))
+                break
             case 'defense':
                 allChoices = database.defenses.map(d => d.get('name'))
                 break
@@ -57,6 +65,7 @@ export async function onInteractionCreate(interaction: Interaction<CacheType>) {
                 break
         }
         
+        allChoices = [...new Set(allChoices)]
         if (!focusedOption.value) { allChoices = allChoices.slice(0, 10) }
         const ratedChoices = findBestCIMatch(focusedOption.value, allChoices).ratings
         const bestChoices = ratedChoices.sort((a, b) => b.rating - a.rating)

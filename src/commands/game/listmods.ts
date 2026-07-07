@@ -1,6 +1,8 @@
 import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder } from 'discord.js'
 import { database } from '../../database/database.js'
 import { capitalize } from '../../utils/string.js'
+import { GoogleSpreadsheetRow } from 'google-spreadsheet'
+import { ModInfo } from '../../database/publicDBConfig.js'
 
 export const command = {
 	data: new SlashCommandBuilder()
@@ -8,80 +10,70 @@ export const command = {
 		.setDescription('List all mods equippable on a given slot for a given hero from a given difficulty')
 		.addStringOption(option => option.setName('difficulty')
 			.setDescription('The difficulty to filter the list by')
-			.addChoices(...['Campaign', 'Chaos 1', 'Chaos 2', 'Chaos 3', 'Chaos 4', 'Chaos 5', 'Chaos 6', 'Chaos 7', 'Chaos 8', 'Chaos 9', 'Chaos 10', 'Survival'].map(e => ({name: e, value: e}))))
+			.setAutocomplete(true)
+		)
 		.addStringOption(option => option.setName('hero')
 			.setDescription('The hero to filter the list by')
-			.addChoices(...[
-				'All', 			'Monk', 		'Apprentice', 	'Huntress', 	'Squire', 
-				'Ev2', 			'Lavamancer', 	'Abyss Lord', 	'Adept', 		'Gunwitch', 
-				'Initiate', 	'Dryad', 		'Barbarian', 	'Mystic', 		'Mercenary', 
-				'Countess', 	'Engineer', 	'Hunter',		'Aquarion',		'Frostweaver'
-			].map(e => ({name: e, value: e}))))
+			.addChoices(...Array.from(
+				new Set(database.defenses.map(d => d.get('hero'))).add('All'),
+				e => ({ name: e, value: e })
+			))
+		)
 		.addStringOption(option => option.setName('slot')
 			.setDescription('The slot to filter the list by')
-			.addChoices(...['Armor', 'Relic', 'Weapon'].map(e => ({name: e, value: e}))))
-		.addStringOption(option => option.setName('custom-filter').setDescription('A custom filter to apply to the list'))
+			.addChoices(...Array.from(
+				new Set(database.mods.map(m => m.get('type').replace(/Ring.+/i, 'Ring'))),
+				e => ({ name: e, value: e })
+			))
+		)
+		.addStringOption(option => option.setName('custom-filter').setDescription('Custom keyword or keyphrase to filter the list by'))
 	,
 	async execute(interaction: ChatInputCommandInteraction) {
-		const diff = interaction.options.getString('difficulty')
+		const difficulty = interaction.options.getString('difficulty')
 		const hero = interaction.options.getString('hero')
 		const slot = interaction.options.getString('slot')
 		const customFilter = interaction.options.getString('custom-filter')
-		let dropFilter: RegExpMatchArray = ['']
-		let heroFilter: RegExpMatchArray = ['']
-		let typeFilter: RegExpMatchArray = ['']
-		let output = database.mods
 
-		if (!hero && !slot && !diff && !customFilter) return await interaction.reply('You must supply at least one parameter!')
-		
-		function decodeDiff(difficulty: string = ""){
-			difficulty = difficulty.replace(/Campaign/i, 'Chaos 0')
-			if (!/\d+/.test(difficulty)) {return difficulty}
-			return parseInt(String(difficulty.match(/\d+/)))
+		if (!difficulty && !hero && !slot && !customFilter) {
+			await interaction.reply('You must supply at least one parameter!')
+			return
 		}
 
-		// Possible Filters
-		if (diff){
-			dropFilter = diff.match(/\b(?:Campaign|Survival|Chaos \d+)\b/ig)!
-			output = output.filter(mod => dropFilter?.some(drop => (capitalize(drop) === mod.get('drop')) || (decodeDiff(drop) >= decodeDiff(mod.get('drop').split('-')[0]) && decodeDiff(drop) <= decodeDiff(mod.get('drop').split('-')[1]))))
+		function inDifficultyRange(difficulty: string, mod: GoogleSpreadsheetRow<ModInfo>) {
+			if (mod.get('drop').includes(difficulty)) return true
+
+			const [ low, high ] = mod.get('drop')
+				.replace(/Campaign/i, 'Chaos 0')
+				.split('-')
+				.map((v: string) => parseInt(String(v.match(/(?<=Chaos )\d+/))))
+			const difficultyNum = parseInt(String(difficulty.match(/\d+/)))
+			return difficultyNum >= low && difficultyNum <= high
 		}
 
-		if (hero){
-			heroFilter = hero.match(/\b(?:All|Squire|Apprentice|Huntress|Monk|Abyss Lord|EV2|Gunwitch|Lavamancer|Mystic|Dryad|Initiate|Adept|Barbarian|Mercenary|Countess|Engineer|Hunter|Aquarion|Frostweaver)\b/ig)!
-			output = output.filter(mod => heroFilter?.some(hero => mod.get('hero')?.includes(capitalize(hero))))
-		}
+		const modlist = database.mods.filter(mod => {
+			const diffMatch = difficulty ? inDifficultyRange(difficulty, mod) : true
+			const heroMatch = hero ? mod.get('hero').includes(hero) : true
+			const slotMatch = slot ? mod.get('type').includes(slot) : true
+			const customMatch = customFilter ? mod.get('description').toLowerCase().includes(customFilter.toLowerCase()) : true
 
-		if (slot){
-			typeFilter = slot.match(/\b(?:Armor|Relic|Weapon)\b/ig)!
-			output = output.filter(mod => typeFilter?.some(type => capitalize(type) === mod.get('type')))
-		}
+			return diffMatch && heroMatch && slotMatch && customMatch
+		}).map(shard => shard.get('name'))
 
-		if (customFilter){ //If there are additional parameters remaining, search the description
-			output = output.filter(mod => mod.get('description')?.toLowerCase().includes(customFilter!.toLowerCase()))
+		if (modlist.length > 50) {
+			modlist.push(`and ${modlist.splice(50).length} more...`)
 		}
-
-		let modlist = output.filter(mod => !mod.get('name')?.includes('(removed)')).map(mod => mod.get('name'))
-		if (modlist.length >= 55){
-			const length = modlist.length - 55
-			modlist = modlist.slice(0, 55)
-			modlist.push(`and ${length} more...`)
-		}
-		const difficulty = diff ? dropFilter.map(d => capitalize(d)).join(', ') : 'Any'
-		const heroes = hero ? heroFilter.map(h => capitalize(h)).join(', ') : 'Any'
-		const types = slot ? typeFilter.map(t => capitalize(t)).join(', ') : 'Any'
-		const customfilter = customFilter ? capitalize(customFilter) : 'N/A'
 
 		const modListEmbed = new EmbedBuilder()
 			.setColor('Blue')
 			.setTitle(`List of mods with filters:`)
-			.setDescription(`**Custom Filters**: ${customfilter}`)
+			.setDescription(`**Custom Filters**: ${customFilter ? capitalize(customFilter) : 'N/A'}`)
 			.addFields(
-				{name: 'Heroes', value: heroes, inline: true},
-				{name: 'Difficulty', value: difficulty, inline: true},
-				{name: 'Type(s)', value: types, inline: true},
-				{name: 'Shards', value: '```' + modlist.join(', ') + '```'},
+				{ name: 'Heroes', 		value: hero ?? 'Any', 		inline: true },
+				{ name: 'Difficulty', 	value: difficulty ?? 'Any', inline: true },
+				{ name: 'Slot', 		value: slot ?? 'Any', 		inline: true },
+				{ name: 'Mods', 		value: '```' + modlist.join(', ') + '```' }
 			)
 		
-		await interaction.reply({embeds: [modListEmbed]})
+		interaction.reply({ embeds: [modListEmbed] })
 	}
 }
