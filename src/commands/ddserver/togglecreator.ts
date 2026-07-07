@@ -32,7 +32,7 @@ export const command = {
 
         const resultEmbed = new EmbedBuilder()
             .setColor('Green')
-            .setDescription(`${action} ${interaction.user} ${reason ? ` | ${reason}` : ''}`)
+            .setDescription(`${action} ${targetUser} ${reason ? ` | ${reason}` : ''}`)
         
         interaction.reply({ embeds: [resultEmbed] })
 	}
