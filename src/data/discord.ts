@@ -21,26 +21,3 @@ export const CHANNEL_IDS = {
 }
 
 export const DOE_BACKER_ROLE_ID = '1470468166055628811'
-
-export const heroEmotes: {[char: string]: string} = {
-    'All': '**All**',
-    'Monk': '<:monk:250374207194529812>',
-    'Apprentice': '<:apprentice:250374207651708928>',
-    'Huntress': '<:huntress:250374208800948225>',
-    'Squire': '<:squire:250374210352840704>',
-    'Ev2': '<:seriesEV:250374210113765376>',
-    'Lavamancer': '<:lavamancer:250374207517491200>',
-    'Abyss Lord': '<:AbyssLord:250374207156912128>',
-    'Adept': '<:adept:350402392178556948>',
-    'Dryad': '<:dryad:345156191967641600>',
-    'Initiate': '<:initiate:327210374581714964>',
-    'Gunwitch': '<:gunwitch:250374210382200832>',
-    'Barbarian': '<:barbarian:421073360584310785>',
-    'Mystic': '<:mystic:250374210562555904>',
-    'Mercenary': '<:Mercenary:908430318845956136>',
-    'Countess': '<:Countess:981719805784629308>',
-    'Engineer': '<:Engineer:1090841647383859230>',
-    'Hunter': '<:Hunter:1167149310119510046>',
-    'Aquarion': '<:Aquarion:1223299224268181555>',
-    'Frostweaver': '<:Frostweaver:1317314894454063176>'
-}

@@ -1,10 +1,11 @@
 import { EmbedBuilder } from 'discord.js'
 import { GoogleSpreadsheetRow } from 'google-spreadsheet'
 import { ModInfo, ShardInfo } from '../database/publicDBConfig.js'
-import { heroEmotes } from '../data/discord.js'
 import { IMAGE_URLS } from '../data/assets.js'
 import { database } from '../database/database.js'
 import path from 'path'
+
+const heroEmotes = Object.fromEntries(database.data.map(d => [d.get('hero'), d.get('emote')]))
 
 export function getShardInfo(shard: GoogleSpreadsheetRow<ShardInfo>) {
     const difficultyIconURL = IMAGE_URLS[path.basename(shard.get('obtain_icon_URL'))]

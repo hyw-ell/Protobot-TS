@@ -21,6 +21,9 @@ type LinkInfo = { [K in LinkKeys]: string }
 type ContributorKeys = 'img' | 'name' | 'username' | 'id' | 'description' | 'roles' | 'imageURL'
 type ContributorInfo = { [K in ContributorKeys]: string }
 
+type DataKeys = 'obtain' | 'obtain_icon_url' | 'mod_type' | 'mod_icon_url' | 'hero' | 'emote'
+type DataInfo = { [K in DataKeys]: string }
+
 type GenericKeys = 'name' | 'value'
 type GenericInfo = { [K in GenericKeys]: string }
 
@@ -34,4 +37,5 @@ export const publicDatabaseConfig = {
     images: { name: 'Images', type: {} as GenericInfo },
     faq: { name: 'FAQ', type: {} as GenericInfo },
     contributors: { name: 'Contributors', type: {} as ContributorInfo },
+    data: { name: 'Data', type: {} as DataInfo },
 } as const
