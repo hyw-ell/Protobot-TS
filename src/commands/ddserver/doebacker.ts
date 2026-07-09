@@ -27,7 +27,7 @@ export const command = {
 
         if (backer) {
             const result = await member.roles.add(DOE_BACKER_ROLE_ID).catch((e) => {
-                sendToChannel(CHANNEL_IDS.BACKER_VERIFICATION, {
+                sendToChannel(CHANNEL_IDS.DD_ADMIN_LOG, {
                     content: `Failed to add DOE Backer role for user: ${member.user.username}`,
                     files: [{ attachment: Buffer.from(inspect(e, { depth: null })), name: 'error.ts' }]
                 })
