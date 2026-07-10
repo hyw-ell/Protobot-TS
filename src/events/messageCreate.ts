@@ -1,16 +1,9 @@
 import { EmbedBuilder, Message, OmitPartialGroupDMChannel } from 'discord.js'
 import { database } from '../database/database.js'
-import { UserLogInfo } from '../database/privateDBConfig.js'
-import { createAMLogEntry, DMRules } from './eventHelpers/tradeAutomod.js'
+import { createAMLogEntry, warnLFTUser, LFTAutomodConfig } from './eventHelpers/tradeAutomod.js'
 import { sendToChannel } from '../utils/discord.js'
 import { CHANNEL_IDS, DD_SERVER_ID } from '../data/discord.js'
 import { MILLISECONDS } from '../data/time.js'
-
-const LFTAutomodChannels = [
-    '460339922231099402',   // #looking-for-trade-pc
-    '460340670960500737',   // #looking-for-trade-ps
-    '460340942990475264',   // #looking-for-trade-xbox
-]
 
 let recentMessages: OmitPartialGroupDMChannel<Message<boolean>>[] = []
 const spamMessages: OmitPartialGroupDMChannel<Message<boolean>>[] = []
@@ -18,21 +11,21 @@ const spamMessages: OmitPartialGroupDMChannel<Message<boolean>>[] = []
 export async function onMessageCreate(message: OmitPartialGroupDMChannel<Message<boolean>>) {
     if (message.author.bot) return
 
-    if (LFTAutomodChannels.includes(message.channelId) && database.userLogs) {
-        let user = database.userLogs.find(user => user.get('userID') === message.author.id)
+    if (message.channelId in LFTAutomodConfig.channels && database.userLogs) {
+        let user = database.userLogs.find(user => user.get('user_ID') === message.author.id)
         if (!user) {
             user = await database.userLogsTable.addRow({
-                lastMsgID: '',
-                lastMsgTimestamp: '',
                 username: message.author.username,
-                userID: message.author.id,
-            } as UserLogInfo)
+                user_ID: message.author.id,
+            })
 
             database.userLogs.push(user)
         }
-
-        const timePassed = new Date(message.createdTimestamp).getTime() - Date.parse(user.get('lastMsgTimestamp'))
-        const cooldownViolated = timePassed < 16 * MILLISECONDS.HOUR
+        
+        const lastMsgAt = LFTAutomodConfig.channels[message.channelId as keyof typeof LFTAutomodConfig.channels]
+        const lastMsgTimestamp = Date.parse(user.get(lastMsgAt))
+        const timePassed = message.createdAt.getTime() - lastMsgTimestamp
+        const cooldownViolated = timePassed < LFTAutomodConfig.cooldown
         const badFormatting = !/\[W\]|\[H\]|WTB|WTS/i.test(message.content)
 
         if (cooldownViolated || badFormatting){
@@ -43,11 +36,10 @@ export async function onMessageCreate(message: OmitPartialGroupDMChannel<Message
                     CHANNEL_IDS.LFT_LOG,
                     { embeds: [createAMLogEntry(message, violation)] }
                 )
-                DMRules(violation, message, user)
+                warnLFTUser(violation, message, lastMsgTimestamp)
             } catch (e){}
         } else {
-            user.set('lastMsgID', message.id)
-            user.set('lastMsgTimestamp', new Date(message.createdTimestamp).toString())
+            user.set(lastMsgAt, message.createdAt.toString())
             user.save()
         }
     }

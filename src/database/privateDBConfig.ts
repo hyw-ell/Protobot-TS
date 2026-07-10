@@ -1,4 +1,4 @@
-type UserLogKeys = 'lastMsgID' | 'lastMsgTimestamp' | 'username' | 'userID'
+type UserLogKeys = 'user_ID' | 'username' | 'last_pc_msg_at' | 'last_ps_msg_at' | 'last_xbox_msg_at'
 export type UserLogInfo = { [K in UserLogKeys]: string }
 
 // YouTube Post Notifications
