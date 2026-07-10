@@ -1,6 +1,6 @@
 import { EmbedBuilder, Message, OmitPartialGroupDMChannel } from 'discord.js'
 import { database } from '../database/database.js'
-import { createAMLogEntry, warnLFTUser, LFTAutomodConfig } from './eventHelpers/tradeAutomod.js'
+import { createAMLogEntry, warnLFTUser, LFTAutomodConfig } from './eventHelpers/LFTAutomod.js'
 import { sendToChannel } from '../utils/discord.js'
 import { CHANNEL_IDS, DD_SERVER_ID } from '../data/discord.js'
 import { MILLISECONDS } from '../data/time.js'
