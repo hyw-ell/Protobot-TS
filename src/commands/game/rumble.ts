@@ -22,7 +22,7 @@ export const command = {
 		nextDate.setMinutes(nextDate.getMinutes() - nextDate.getTimezoneOffset()) // Convert back to local time
 
 		// const weekNum = Math.floor((now.getTime() - TIMESTAMP) / (MILLISECONDS.DAY * 5) % 6)
-		const weekNum = 4
+		const weekNum = 5
 		const rotation = ['Fire', 'Water', 'Storm', 'Earth', 'Poison', 'Gold'] // TODO this is a guess, correct later if needed
 		const weekNames = rotation.map((r, i) => i === weekNum ? `**${r}**` : r)
 		const rumbleIcons = rotation.map(r => IMAGE_URLS[`Rumble_Icon_${r}.png`])
