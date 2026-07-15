@@ -1,6 +1,9 @@
 import { codeBlock, EmbedBuilder, Message, time } from 'discord.js'
 import { MILLISECONDS } from '../../data/time.js'
 import { truncateString } from '../../utils/string.js'
+import { database } from '../../database/database.js'
+import { sendToChannel } from '../../utils/discord.js'
+import { CHANNEL_IDS } from '../../data/discord.js'
 
 export const LFTAutomodConfig = {
     cooldown: 16 * MILLISECONDS.HOUR,
@@ -10,6 +13,43 @@ export const LFTAutomodConfig = {
         '460340942990475264': 'last_xbox_msg_at',   // #looking-for-trade-xbox
     }
 } as const
+
+/**
+ * Runs the Automod for the Looking-For-Trade channels in the Official DD Discord
+ */
+export async function processLFTMessage(message: Message) {
+    if (!database.userLogs) return
+    let user = database.userLogs.find(user => user.get('user_ID') === message.author.id)
+    if (!user) {
+        user = await database.userLogsTable.addRow({
+            username: message.author.username,
+            user_ID: message.author.id,
+        })
+
+        database.userLogs.push(user)
+    }
+    
+    const lastMsgAt = LFTAutomodConfig.channels[message.channelId as keyof typeof LFTAutomodConfig.channels]
+    const lastMsgTimestamp = Date.parse(user.get(lastMsgAt))
+    const timePassed = message.createdAt.getTime() - lastMsgTimestamp
+    const cooldownViolated = timePassed < LFTAutomodConfig.cooldown
+    const badFormatting = !/\[W\]|\[H\]|WTB|WTS/i.test(message.content)
+
+    if (cooldownViolated || badFormatting){
+        const violation = cooldownViolated ? 'Cooldown' : 'Formatting'
+        try {
+            await message.delete()
+            await sendToChannel(
+                CHANNEL_IDS.LFT_LOG,
+                { embeds: [createAMLogEntry(message, violation)] }
+            )
+            warnLFTUser(violation, message, lastMsgTimestamp)
+        } catch (e){}
+    } else {
+        user.set(lastMsgAt, message.createdAt.toString())
+        user.save()
+    }
+}
 
 /**
  * Creates an embed logging the deletion of the offending message
