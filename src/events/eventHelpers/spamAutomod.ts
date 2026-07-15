@@ -19,7 +19,7 @@ export async function checkForSpam(message: Message) {
             m.attachments.first()?.width === message.attachments.first()?.width &&
             m.attachments.first()?.height === message.attachments.first()?.height
     
-        return (authorMatch && textMatch && imgMatch) ? "repeatMessages" : "remainingMessages"
+        return (authorMatch && textMatch && imgMatch && (m.content || m.attachments.size)) ? "repeatMessages" : "remainingMessages"
     })
     
     if (repeatMessages && repeatMessages.length >= 1) {
