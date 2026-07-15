@@ -9,24 +9,14 @@ export const command = {
 		.setDescription('Show the weapons and mods that are currently in rotation in Drakenfrost Keep')
 	,
 	async execute(interaction: ChatInputCommandInteraction) {
-		// Drakenfrost Keep rotation changes on Tuesdays at 5AM (UTC)
-		const TIMESTAMP = 1554786000000 // April 9th, 2019, 5am UTC, used as a reference to calculate week number
+		// Drakenfrost Keep rotation changes every week on Tuesdays at 5AM (UTC)
+		const WEEK_0_START = 1554786000000 // April 9th, 2019, 5am UTC, used as a reference to calculate week number
 		const now = new Date()
-		now.setMinutes(now.getMinutes() + now.getTimezoneOffset()) // Ensure that UTC is being used
-		
-		const nextDate = new Date( // Gets the next Tuesday at 5AM (UTC)
-			now.getUTCFullYear(),
-			now.getUTCMonth(),
-			now.getUTCDate() + (9 - now.getUTCDay()) % 7,
-			5, 0, 0, 0
-		)
-		if (nextDate <= now) nextDate.setDate(nextDate.getDate() + 7)
-		
+		const weeksPassed = Math.floor((now.getTime() - WEEK_0_START) / MILLISECONDS.WEEK)
+		const weekNum = weeksPassed % 4
+		const nextDate = new Date(WEEK_0_START + (weeksPassed + 1) * MILLISECONDS.WEEK)
 		const { days, hours, minutes, seconds } = dateDiff(nextDate, now)
 		
-		nextDate.setMinutes(nextDate.getMinutes() - nextDate.getTimezoneOffset()) // Convert back to local time
-		
-		const weekNum = Math.floor((now.getTime() - TIMESTAMP) / MILLISECONDS.WEEK % 4)
 		const infographics = [
 			IMAGE_URLS['Torchbearer_Week.png'],
 			IMAGE_URLS['Frozen_Path_Week.png'],

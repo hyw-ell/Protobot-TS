@@ -9,21 +9,15 @@ export const command = {
 		.setDescription('Show what items are available from Elemental Rumble this week')
 	,
 	async execute(interaction: ChatInputCommandInteraction) {
-		// TODO Unsure of rotation schedule just yet; week number will be hard coded for now and fixed later
-		// Rumble rotation changes every 5 days at 0:00 (UTC)
-		const TIMESTAMP = 1756857600000 // September 3rd, 2025, 0:00 UTC, used as a reference to calculate week number
+		// Rumble rotation changes every "week" (5 days) at 0:00 (UTC)
+		const WEEK_0_START = 1781827200000 // June 19th, 2026 at 0:00 UTC, used as a reference to calculate week number
 		const now = new Date()
-		now.setMinutes(now.getMinutes() + now.getTimezoneOffset()) // Ensure that UTC is being used
-		
-		const nextDate = new Date(TIMESTAMP)
-		while (nextDate <= now) { nextDate.setDate(nextDate.getDate() + 5) }
+		const weeksPassed = Math.floor((now.getTime() - WEEK_0_START) / (MILLISECONDS.DAY * 5))
+		const weekNum = weeksPassed % 6
+		const nextDate = new Date(WEEK_0_START + (weeksPassed + 1) * MILLISECONDS.DAY * 5)
 		const { days, hours, minutes, seconds } = dateDiff(nextDate, now)
 		
-		nextDate.setMinutes(nextDate.getMinutes() - nextDate.getTimezoneOffset()) // Convert back to local time
-
-		// const weekNum = Math.floor((now.getTime() - TIMESTAMP) / (MILLISECONDS.DAY * 5) % 6)
-		const weekNum = 5
-		const rotation = ['Fire', 'Water', 'Storm', 'Earth', 'Poison', 'Gold'] // TODO this is a guess, correct later if needed
+		const rotation = ['Fire', 'Water', 'Storm', 'Earth', 'Poison', 'Gold']
 		const weekNames = rotation.map((r, i) => i === weekNum ? `**${r}**` : r)
 		const rumbleIcons = rotation.map(r => IMAGE_URLS[`Rumble_Icon_${r}.png`])
 		const infographics = rotation.map(r => IMAGE_URLS[`Rumble_Items_${r}.png`])
@@ -33,18 +27,12 @@ export const command = {
 			.setTitle('__**Time until next rotation:**__')
 			.setThumbnail(rumbleIcons[weekNum])
 			.addFields([
-				// {
-				// 	name: `\u200B    ${days}           ${hours}            ${minutes}             ${seconds}`,
-				// 	value: 'Days \u2009 Hours \u2009 Minutes \u2009 Seconds\n\u200b'
-				// },
-				// { name: 'Weekly Rotation', value: weekNames.join(' -> ') + '\n\u200b' },
-				// { name: '**Next Rotation At**:', value: `<t:${nextDate.getTime()/1000}:F>`}
 				{
-					name: `\u200B    ?           ?             ?              ?`,
+					name: `\u200B    ${days}           ${hours}            ${minutes}             ${seconds}`,
 					value: 'Days \u2009 Hours \u2009 Minutes \u2009 Seconds\n\u200b'
 				},
 				{ name: 'Weekly Rotation', value: weekNames.join(' -> ') + '\n\u200b' },
-				{ name: '**Next Rotation At**:', value: `?`}
+				{ name: '**Next Rotation At**:', value: `<t:${nextDate.getTime()/1000}:F>`}
 			])
 			.setImage(infographics[weekNum])
 			.setFooter({ 
