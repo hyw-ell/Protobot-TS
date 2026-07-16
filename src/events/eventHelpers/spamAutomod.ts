@@ -32,7 +32,7 @@ export async function checkForSpam(message: Message) {
                 name: author.username,
                 iconURL: author.displayAvatarURL({ extension: 'png' })
             })
-            .setDescription(`${author} was timed out for 10 minutes.`)
+            .setDescription(`${author} was timed out for 1 minute.`)
             .addFields([
                 { name: 'Reason', value: 'Posting identical messages in multiple channels.' },
                 {
@@ -54,7 +54,7 @@ export async function checkForSpam(message: Message) {
             }
         }
 
-        member.timeout(MILLISECONDS.MINUTE * 10, 'Posting identical messages in multiple channels.')
+        member.timeout(MILLISECONDS.MINUTE, 'Posting identical messages in multiple channels.')
         sendToChannel(CHANNEL_IDS.AUTOMOD, { embeds: [logEmbed], files: logAttachment ? [logAttachment] : [] })
         const userWarning = await message.reply(`${author} Do not post identical messages across multiple channels.`)
         setTimeout(() => { userWarning.delete() }, MILLISECONDS.SECOND * 15)
