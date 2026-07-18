@@ -13,13 +13,16 @@ export async function checkForSpam(message: Message) {
     const { repeatMessages, remainingMessages } = Object.groupBy(recentMessages, m => {
         const authorMatch = m.author === message.author
         const textMatch = m.content === message.content
+        const channelMatch = m.channelId === message.channelId
         const imgMatch = 
             m.attachments.size === message.attachments.size &&
             m.attachments.first()?.size === message.attachments.first()?.size &&
             m.attachments.first()?.width === message.attachments.first()?.width &&
             m.attachments.first()?.height === message.attachments.first()?.height
     
-        return (authorMatch && textMatch && imgMatch && (m.content || m.attachments.size)) ? "repeatMessages" : "remainingMessages"
+        return (authorMatch && textMatch && imgMatch && !channelMatch && (m.content || m.attachments.size))
+            ? "repeatMessages"
+            : "remainingMessages"
     })
     
     if (repeatMessages && repeatMessages.length >= 1) {
