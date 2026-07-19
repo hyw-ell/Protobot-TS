@@ -17,7 +17,8 @@ export const command = {
 		const nextDate = new Date(WEEK_0_START + (weeksPassed + 1) * MILLISECONDS.DAY * 5)
 		const { days, hours, minutes, seconds } = dateDiff(nextDate, now)
 		
-		const rotation = ['Fire', 'Water', 'Storm', 'Earth', 'Poison', 'Gold']
+		// const rotation = ['Fire', 'Water', 'Storm', 'Earth', 'Poison', 'Gold']
+		const rotation = ['Poison', 'Gold', 'Poison', 'Gold', 'Poison', 'Gold']
 		const weekNames = rotation.map((r, i) => i === weekNum ? `**${r}**` : r)
 		const rumbleIcons = rotation.map(r => IMAGE_URLS[`Rumble_Icon_${r}.png`])
 		const infographics = rotation.map(r => IMAGE_URLS[`Rumble_Items_${r}.png`])
