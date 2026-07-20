@@ -38,7 +38,10 @@ export async function checkForSpam(message: Message) {
             .setDescription(`${author} was timed out for 1 minute.`)
             .addFields([
                 { name: 'Reason', value: 'Posting identical messages in multiple channels.' },
-                { name: 'Channels', value: repeatMessages.map(m => channelMention(m.channelId)).join(' ') },
+                { 
+                    name: 'Channels',
+                    value: [...repeatMessages, message].map(m => channelMention(m.channelId)).join(' ')
+                },
                 {
                     name: 'Content',
                     value: truncateString(content, 1024) || 'No content'
