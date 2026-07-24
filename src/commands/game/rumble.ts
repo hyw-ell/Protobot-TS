@@ -10,15 +10,14 @@ export const command = {
 	,
 	async execute(interaction: ChatInputCommandInteraction) {
 		// Rumble rotation changes every "week" (5 days) at 0:00 (UTC)
-		const WEEK_0_START = 1781827200000 // June 19th, 2026 at 0:00 UTC, used as a reference to calculate week number
+		const rotation = ['Earth', 'Fire', 'Water', 'Storm', 'Poison', 'Gold']
+		const WEEK_0_START = 1784851200000 // July 24th, 2026 at 0:00 UTC, used as a reference to calculate week number
 		const now = new Date()
 		const weeksPassed = Math.floor((now.getTime() - WEEK_0_START) / (MILLISECONDS.DAY * 5))
-		const weekNum = weeksPassed % 6
 		const nextDate = new Date(WEEK_0_START + (weeksPassed + 1) * MILLISECONDS.DAY * 5)
 		const { days, hours, minutes, seconds } = dateDiff(nextDate, now)
 		
-		// const rotation = ['Fire', 'Water', 'Storm', 'Earth', 'Poison', 'Gold']
-		const rotation = ['Poison', 'Gold', 'Poison', 'Gold', 'Poison', 'Gold']
+		const weekNum = weeksPassed % rotation.length
 		const weekNames = rotation.map((r, i) => i === weekNum ? `**${r}**` : r)
 		const rumbleIcons = rotation.map(r => IMAGE_URLS[`Rumble_Icon_${r}.png`])
 		const infographics = rotation.map(r => IMAGE_URLS[`Rumble_Items_${r}.png`])
