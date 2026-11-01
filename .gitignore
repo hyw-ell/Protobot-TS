@@ -1,6 +1,7 @@
 node_modules
 prod
 .env
+pnpm-workspace.yaml
 *test*
 
 # For use with Fly.io
